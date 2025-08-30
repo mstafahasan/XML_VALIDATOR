@@ -1,10 +1,12 @@
-from flask import Flask, request, jsonify, render_template, session, redirect, url_for
+from flask import Flask, request, jsonify, render_template, session, redirect, url_for, send_file
 import os
 import xmlschema
 import sys
 import json
 from datetime import datetime
 from functools import wraps
+import zipfile
+import io
 
 # Check if running in an interactive shell (e.g., IPython/Jupyter)
 if hasattr(sys, 'ps1') or 'IPYTHON' in os.environ.get('TERM', ''):
@@ -88,13 +90,12 @@ def validate_xml():
     try:
         # Get uploaded files
         schema_file = request.files.get('schema')
-        valid_files = request.files.getlist('valid')
-        invalid_files = request.files.getlist('invalid')
+        xml_files = request.files.getlist('xml_files')
         
         if not schema_file:
             return jsonify({'error': 'Schema file is required'}), 400
         
-        if len(valid_files) == 0 and len(invalid_files) == 0:
+        if len(xml_files) == 0:
             return jsonify({'error': 'At least one XML file is required'}), 400
         
         # Save schema temporarily
@@ -119,8 +120,8 @@ def validate_xml():
             # Load schema
             schema = xmlschema.XMLSchema(schema_path)
             
-            # Validate valid XML files
-            for xml_file in valid_files:
+            # Validate all XML files
+            for xml_file in xml_files:
                 try:
                     # Get file size
                     file_content = xml_file.read()
@@ -134,29 +135,7 @@ def validate_xml():
                         'size': file_size
                     })
                 except Exception as e:
-                    # If a "valid" file fails validation, add it to invalid results
-                    results['invalid'].append({
-                        'filename': xml_file.filename,
-                        'size': file_size,
-                        'error': str(e)
-                    })
-            
-            # Validate invalid XML files (these should fail validation)
-            for xml_file in invalid_files:
-                try:
-                    # Get file size
-                    file_content = xml_file.read()
-                    file_size = len(file_content)
-                    xml_file.seek(0)  # Reset file pointer
-                    
-                    # Validate XML against schema
-                    schema.validate(xml_file)
-                    # If an "invalid" file passes validation, add it to valid results
-                    results['valid'].append({
-                        'filename': xml_file.filename,
-                        'size': file_size
-                    })
-                except Exception as e:
+                    # If validation fails, add it to invalid results
                     results['invalid'].append({
                         'filename': xml_file.filename,
                         'size': file_size,
@@ -439,6 +418,65 @@ def get_message_stats():
         
     except Exception as e:
         return jsonify({'error': f'Server error: {str(e)}'}), 500
+
+# Download sample files
+@app.route('/download-samples')
+def download_samples():
+    try:
+        # Create a zip file in memory
+        zip_buffer = io.BytesIO()
+        
+        with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_DEFLATED) as zip_file:
+            # Add XSD schema
+            if os.path.exists('AE_XSD_schema.xsd'):
+                zip_file.write('AE_XSD_schema.xsd', 'AE_XSD_schema.xsd')
+            
+            # Add valid XML samples
+            valid_dir = 'valid_xmls'
+            if os.path.exists(valid_dir):
+                for filename in os.listdir(valid_dir):
+                    if filename.endswith('.xml'):
+                        file_path = os.path.join(valid_dir, filename)
+                        zip_file.write(file_path, f'valid_samples/{filename}')
+            
+            # Add invalid XML samples
+            invalid_dir = 'invalid_xmls'
+            if os.path.exists(invalid_dir):
+                for filename in os.listdir(invalid_dir):
+                    if filename.endswith('.xml'):
+                        file_path = os.path.join(invalid_dir, filename)
+                        zip_file.write(file_path, f'invalid_samples/{filename}')
+            
+            # Add README file
+            readme_content = """XML Schema Validator - Sample Files
+
+This zip contains sample files for testing the XML Schema Validator:
+
+1. AE_XSD_schema.xsd - The main XSD schema file
+2. valid_samples/ - Contains XML files that should pass validation
+3. invalid_samples/ - Contains XML files that should fail validation
+
+To use these samples:
+1. Upload the XSD schema file first
+2. Upload any XML files you want to validate
+3. Click "Start Validation" to see the results
+
+The validator will automatically determine if each XML file is valid or invalid based on the schema.
+"""
+            zip_file.writestr('README.txt', readme_content)
+        
+        # Reset buffer position
+        zip_buffer.seek(0)
+        
+        return send_file(
+            zip_buffer,
+            mimetype='application/zip',
+            as_attachment=True,
+            download_name='xml_validator_samples.zip'
+        )
+        
+    except Exception as e:
+        return jsonify({'error': f'Failed to create sample files: {str(e)}'}), 500
 
 if __name__ == '__main__':
     try:

@@ -162,6 +162,16 @@ const Home = () => {
     });
   };
 
+  const handleDownloadSamples = () => {
+    // Create a link element and trigger download
+    const link = document.createElement('a');
+    link.href = '/download-samples';
+    link.download = 'xml_validator_samples.zip';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
     <HomeContainer>
       <HeroSection>
@@ -189,9 +199,9 @@ const Home = () => {
             <Play size={20} />
             Start Validating
           </HeroButton>
-          <HeroButton className="secondary">
+          <HeroButton className="secondary" onClick={handleDownloadSamples}>
             <Download size={20} />
-            Download Sample
+            Download Samples
           </HeroButton>
         </HeroButtons>
       </HeroSection>
@@ -220,7 +230,7 @@ const Home = () => {
             <FeatureTitle>Batch Processing</FeatureTitle>
             <FeatureDescription>
               Upload multiple XML files at once for efficient batch validation 
-              and processing of large datasets.
+              against your XSD schema with automatic valid/invalid classification.
             </FeatureDescription>
           </FeatureCard>
 

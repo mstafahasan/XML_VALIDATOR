@@ -169,8 +169,7 @@ const SuccessMessage = styled.div`
 
 const FileUpload = ({ onValidationComplete, isValidating, setIsValidating }) => {
   const [schemaFile, setSchemaFile] = useState(null);
-  const [validFiles, setValidFiles] = useState([]);
-  const [invalidFiles, setInvalidFiles] = useState([]);
+  const [xmlFiles, setXmlFiles] = useState([]);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
@@ -181,13 +180,8 @@ const FileUpload = ({ onValidationComplete, isValidating, setIsValidating }) => 
     }
   }, []);
 
-  const onValidFilesDrop = useCallback((acceptedFiles) => {
-    setValidFiles(prev => [...prev, ...acceptedFiles]);
-    setError('');
-  }, []);
-
-  const onInvalidFilesDrop = useCallback((acceptedFiles) => {
-    setInvalidFiles(prev => [...prev, ...acceptedFiles]);
+  const onXmlFilesDrop = useCallback((acceptedFiles) => {
+    setXmlFiles(prev => [...prev, ...acceptedFiles]);
     setError('');
   }, []);
 
@@ -197,14 +191,8 @@ const FileUpload = ({ onValidationComplete, isValidating, setIsValidating }) => 
     multiple: false
   });
 
-  const { getRootProps: getValidRootProps, getInputProps: getValidInputProps, isDragActive: isValidDragActive } = useDropzone({
-    onDrop: onValidFilesDrop,
-    accept: { '.xml': [] },
-    multiple: true
-  });
-
-  const { getRootProps: getInvalidRootProps, getInputProps: getInvalidInputProps, isDragActive: isInvalidDragActive } = useDropzone({
-    onDrop: onInvalidFilesDrop,
+  const { getRootProps: getXmlRootProps, getInputProps: getXmlInputProps, isDragActive: isXmlDragActive } = useDropzone({
+    onDrop: onXmlFilesDrop,
     accept: { '.xml': [] },
     multiple: true
   });
@@ -227,7 +215,7 @@ const FileUpload = ({ onValidationComplete, isValidating, setIsValidating }) => 
       return;
     }
 
-    if (validFiles.length === 0 && invalidFiles.length === 0) {
+    if (xmlFiles.length === 0) {
       setError('Please upload at least one XML file to validate');
       return;
     }
@@ -240,12 +228,8 @@ const FileUpload = ({ onValidationComplete, isValidating, setIsValidating }) => 
       const formData = new FormData();
       formData.append('schema', schemaFile);
       
-      validFiles.forEach(file => {
-        formData.append('valid', file);
-      });
-      
-      invalidFiles.forEach(file => {
-        formData.append('invalid', file);
+      xmlFiles.forEach(file => {
+        formData.append('xml_files', file);
       });
 
       const response = await axios.post('/validate', formData, {
@@ -303,23 +287,23 @@ const FileUpload = ({ onValidationComplete, isValidating, setIsValidating }) => 
 
       <UploadSection>
         <SectionTitle>
-          <CheckCircle size={20} />
-          Valid XML Files (Optional)
+          <FileText size={20} />
+          XML Files to Validate
         </SectionTitle>
-        <Dropzone {...getValidRootProps()} isDragActive={isValidDragActive}>
-          <input {...getValidInputProps()} />
+        <Dropzone {...getXmlRootProps()} isDragActive={isXmlDragActive}>
+          <input {...getXmlInputProps()} />
           <DropzoneContent>
             <DropzoneIcon />
             <DropzoneText>
-              {isValidDragActive ? 'Drop valid XML files here' : 'Drag & drop valid XML files here'}
+              {isXmlDragActive ? 'Drop XML files here' : 'Drag & drop XML files here for validation'}
             </DropzoneText>
-            <DropzoneSubtext>or click to browse files</DropzoneSubtext>
+            <DropzoneSubtext>or click to browse files (supports multiple files)</DropzoneSubtext>
           </DropzoneContent>
         </Dropzone>
-        {validFiles.length > 0 && (
+        {xmlFiles.length > 0 && (
           <FileList>
             <AnimatePresence>
-              {validFiles.map((file, index) => (
+              {xmlFiles.map((file, index) => (
                 <FileItem
                   key={`${file.name}-${index}`}
                   initial={{ opacity: 0, x: -20 }}
@@ -333,49 +317,7 @@ const FileUpload = ({ onValidationComplete, isValidating, setIsValidating }) => 
                       <div className="fileSize">{formatFileSize(file.size)}</div>
                     </FileDetails>
                   </FileInfo>
-                  <RemoveButton onClick={() => removeFile(file, validFiles, setValidFiles)}>
-                    <X size={16} />
-                  </RemoveButton>
-                </FileItem>
-              ))}
-            </AnimatePresence>
-          </FileList>
-        )}
-      </UploadSection>
-
-      <UploadSection>
-        <SectionTitle>
-          <AlertCircle size={20} />
-          Invalid XML Files (Optional)
-        </SectionTitle>
-        <Dropzone {...getInvalidRootProps()} isDragActive={isInvalidDragActive}>
-          <input {...getInvalidInputProps()} />
-          <DropzoneContent>
-            <DropzoneIcon />
-            <DropzoneText>
-              {isInvalidDragActive ? 'Drop invalid XML files here' : 'Drag & drop invalid XML files here'}
-            </DropzoneText>
-            <DropzoneSubtext>or click to browse files</DropzoneSubtext>
-          </DropzoneContent>
-        </Dropzone>
-        {invalidFiles.length > 0 && (
-          <FileList>
-            <AnimatePresence>
-              {invalidFiles.map((file, index) => (
-                <FileItem
-                  key={`${file.name}-${index}`}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: 20 }}
-                >
-                  <FileInfo>
-                    <FileIcon size={20} />
-                    <FileDetails>
-                      <div className="fileName">{file.name}</div>
-                      <div className="fileSize">{formatFileSize(file.size)}</div>
-                    </FileDetails>
-                  </FileInfo>
-                  <RemoveButton onClick={() => removeFile(file, invalidFiles, setInvalidFiles)}>
+                  <RemoveButton onClick={() => removeFile(file, xmlFiles, setXmlFiles)}>
                     <X size={16} />
                   </RemoveButton>
                 </FileItem>
@@ -401,7 +343,7 @@ const FileUpload = ({ onValidationComplete, isValidating, setIsValidating }) => 
 
       <ValidationButton 
         onClick={handleValidation} 
-        disabled={isValidating || (!schemaFile || (validFiles.length === 0 && invalidFiles.length === 0))}
+        disabled={isValidating || (!schemaFile || xmlFiles.length === 0)}
       >
         {isValidating ? (
           <>
