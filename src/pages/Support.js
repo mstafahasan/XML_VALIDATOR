@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
-import { Mail, MessageCircle, BookOpen, HelpCircle, Phone, Clock, MapPin, Send, CheckCircle } from 'lucide-react';
+import { Mail, BookOpen, HelpCircle, Code, Github, Brain, Rocket } from 'lucide-react';
 
 const SupportContainer = styled.div`
   min-height: 100vh;
@@ -20,7 +20,7 @@ const HeroTitle = styled(motion.h1)`
   margin-bottom: 1rem;
   background: linear-gradient(135deg, #fff 0%, #e0e7ff 100%);
   -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  -webkit-background-fill-color: transparent;
   background-clip: text;
 
   @media (max-width: 768px) {
@@ -197,48 +197,6 @@ const SubmitButton = styled.button`
   }
 `;
 
-const ContactInfo = styled.div`
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 2rem;
-  margin-top: 2rem;
-`;
-
-const ContactItem = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  padding: 1.5rem;
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-  border: 1px solid #eee;
-`;
-
-const ContactIcon = styled.div`
-  width: 50px;
-  height: 50px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-`;
-
-const ContactDetails = styled.div`
-  .contactTitle {
-    font-weight: 600;
-    color: #333;
-    margin-bottom: 0.25rem;
-  }
-  
-  .contactText {
-    color: #666;
-    font-size: 0.9rem;
-  }
-`;
-
 const SuccessMessage = styled(motion.div)`
   background: #f0fff4;
   color: #2f855a;
@@ -251,6 +209,27 @@ const SuccessMessage = styled(motion.div)`
   gap: 0.5rem;
   text-align: center;
   justify-content: center;
+`;
+
+const PhaseSection = styled.div`
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 2rem;
+  border-radius: 16px;
+  margin: 2rem 0;
+  text-align: center;
+`;
+
+const PhaseTitle = styled.h3`
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+`;
+
+const PhaseDescription = styled.p`
+  font-size: 1.1rem;
+  opacity: 0.9;
+  line-height: 1.6;
 `;
 
 const Support = () => {
@@ -294,14 +273,14 @@ const Support = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
         >
-          Get Support
+          Project Support & Resources
         </HeroTitle>
         <HeroSubtitle
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2 }}
         >
-          We're here to help you succeed with XML Validator Pro
+          Documentation and resources for the AI-Powered Verification Framework project
         </HeroSubtitle>
       </HeroSection>
 
@@ -311,52 +290,68 @@ const Support = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.4 }}
         >
-          <SectionTitle>How Can We Help?</SectionTitle>
+          <SectionTitle>Project Documentation</SectionTitle>
           <HelpGrid>
             <HelpCard>
               <HelpIcon>
                 <BookOpen size={28} />
               </HelpIcon>
-              <HelpTitle>Documentation</HelpTitle>
+              <HelpTitle>Technical Documentation</HelpTitle>
               <HelpDescription>
-                Comprehensive guides, tutorials, and API documentation to help you get started 
-                and make the most of our platform.
+                Comprehensive README.md with setup instructions, architecture details, 
+                and technical specifications for the verification framework.
               </HelpDescription>
-              <HelpButton>View Docs</HelpButton>
+              <HelpButton onClick={() => window.open('https://github.com', '_blank')}>
+                View Documentation
+              </HelpButton>
+            </HelpCard>
+
+            <HelpCard>
+              <HelpIcon>
+                <Code size={28} />
+              </HelpIcon>
+              <HelpTitle>Source Code Repository</HelpTitle>
+              <HelpDescription>
+                Access the complete source code, including React frontend, Flask backend, 
+                and all components of the verification framework.
+              </HelpDescription>
+              <HelpButton onClick={() => window.open('https://github.com', '_blank')}>
+                Browse Code
+              </HelpButton>
             </HelpCard>
 
             <HelpCard>
               <HelpIcon>
                 <HelpCircle size={28} />
               </HelpIcon>
-              <HelpTitle>FAQ</HelpTitle>
+              <HelpTitle>Project Overview</HelpTitle>
               <HelpDescription>
-                Quick answers to common questions about XML validation, file formats, 
-                and platform usage.
+                Visit the About page to understand the project's scope, Siemens alignment, 
+                and the roadmap for LLM-powered automation.
               </HelpDescription>
-              <HelpButton>Browse FAQ</HelpButton>
-            </HelpCard>
-
-            <HelpCard>
-              <HelpIcon>
-                <MessageCircle size={28} />
-              </HelpIcon>
-              <HelpTitle>Community</HelpTitle>
-              <HelpDescription>
-                Join our community forum to connect with other users, share experiences, 
-                and get help from the community.
-              </HelpDescription>
-              <HelpButton>Join Community</HelpButton>
+              <HelpButton onClick={() => window.location.href = '/about'}>
+                Learn More
+              </HelpButton>
             </HelpCard>
           </HelpGrid>
         </ContentSection>
+
+        <PhaseSection>
+          <PhaseTitle>🚀 Project Roadmap & Next Steps</PhaseTitle>
+          <PhaseDescription>
+            This Phase 1 implementation demonstrates the team's technical capabilities and 
+            project management skills. The next phase will integrate LLM-powered automation, 
+            aligning with Siemens' vision for AI-based verification frameworks and automated 
+            testing solutions in the EDA domain.
+          </PhaseDescription>
+        </PhaseSection>
 
         <ContentSection
           initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.6 }}
         >
-          <SectionTitle>Contact Us</SectionTitle>
+          <SectionTitle>Technical Support & Feedback</SectionTitle>
           <ContactForm onSubmit={handleSubmit}>
             <FormGroup>
               <FormLabel htmlFor="name">Full Name *</FormLabel>
@@ -393,7 +388,7 @@ const Support = () => {
                 value={formData.subject}
                 onChange={handleInputChange}
                 required
-                placeholder="What can we help you with?"
+                placeholder="Technical question, feedback, or collaboration inquiry"
               />
             </FormGroup>
 
@@ -405,7 +400,7 @@ const Support = () => {
                 value={formData.message}
                 onChange={handleInputChange}
                 required
-                placeholder="Please describe your issue or question in detail..."
+                placeholder="Please describe your technical question, provide feedback on the project, or inquire about collaboration opportunities..."
               />
             </FormGroup>
 
@@ -417,7 +412,6 @@ const Support = () => {
                 </>
               ) : (
                 <>
-                  <Send size={20} />
                   Send Message
                 </>
               )}
@@ -428,53 +422,18 @@ const Support = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
               >
-                <CheckCircle size={20} />
-                Thank you! Your message has been sent successfully. We'll get back to you soon.
+                Thank you! Your message has been sent successfully.
               </SuccessMessage>
             )}
           </ContactForm>
 
-          <ContactInfo>
-            <ContactItem>
-              <ContactIcon>
-                <Mail size={24} />
-              </ContactIcon>
-              <ContactDetails>
-                <div className="contactTitle">Email Support</div>
-                <div className="contactText">support@xmlvalidator.com</div>
-              </ContactDetails>
-            </ContactItem>
-
-            <ContactItem>
-              <ContactIcon>
-                <Phone size={24} />
-              </ContactIcon>
-              <ContactDetails>
-                <div className="contactTitle">Phone Support</div>
-                <div className="contactText">+1 (555) 123-4567</div>
-              </ContactDetails>
-            </ContactItem>
-
-            <ContactItem>
-              <ContactIcon>
-                <Clock size={24} />
-              </ContactIcon>
-              <ContactDetails>
-                <div className="contactTitle">Support Hours</div>
-                <div className="contactText">24/7 Available</div>
-              </ContactDetails>
-            </ContactItem>
-
-            <ContactItem>
-              <ContactIcon>
-                <MapPin size={24} />
-              </ContactIcon>
-              <ContactDetails>
-                <div className="contactTitle">Response Time</div>
-                <div className="contactText">Within 2 hours</div>
-              </ContactDetails>
-            </ContactItem>
-          </ContactInfo>
+          <div style={{ textAlign: 'center', marginTop: '2rem', color: '#666' }}>
+            <p>
+              <strong>Note:</strong> This contact form is for project-related inquiries, technical support, 
+              and collaboration opportunities. For Siemens sponsorship inquiries, please refer to the 
+              official registration process.
+            </p>
+          </div>
         </ContentSection>
 
         <ContentSection
@@ -482,23 +441,49 @@ const Support = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.8 }}
         >
-          <SectionTitle>Support Resources</SectionTitle>
+          <SectionTitle>Implementation & Deployment</SectionTitle>
           <div style={{ textAlign: 'center', color: '#666', lineHeight: '1.8' }}>
             <p>
-              <strong>Getting Started Guide:</strong> New to XML Validator Pro? Our comprehensive 
-              getting started guide will walk you through the basics and help you validate your first XML files.
+              <strong>1. Setup & Installation:</strong> Follow the detailed instructions in the README.md 
+              to install dependencies and start both the Flask backend and React frontend servers.
             </p>
             <p>
-              <strong>Video Tutorials:</strong> Watch step-by-step video tutorials covering everything 
-              from basic validation to advanced features and API integration.
+              <strong>2. Usage & Validation:</strong> Upload XSD schema files and XML documents, then 
+              execute validation processes to demonstrate the framework's capabilities.
             </p>
             <p>
-              <strong>API Reference:</strong> Detailed API documentation with examples for developers 
-              who want to integrate XML validation into their applications.
+              <strong>3. Results Analysis:</strong> Review validation results and error reporting to 
+              understand the system's diagnostic capabilities and user experience.
             </p>
             <p>
-              <strong>Best Practices:</strong> Learn industry best practices for XML schema design, 
-              validation strategies, and error handling.
+              <strong>4. Technical Assessment:</strong> Evaluate the code quality, architecture design, 
+              and scalability features that support future AI/ML integration.
+            </p>
+          </div>
+        </ContentSection>
+
+        <ContentSection
+          initial={{ opacity: 0, y: 50 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 1.0 }}
+        >
+          <SectionTitle>Project Evaluation Criteria</SectionTitle>
+          <div style={{ textAlign: 'center', color: '#666', lineHeight: '1.8' }}>
+            <p>
+              <strong>Technical Implementation:</strong> Modern web technologies, clean architecture, 
+              and scalable design patterns that demonstrate professional development skills.
+            </p>
+            <p>
+              <strong>User Experience:</strong> Intuitive interface, responsive design, and professional 
+              appearance that meets enterprise software standards.
+            </p>
+            <p>
+              <strong>Code Quality:</strong> Well-structured components, proper error handling, and 
+              maintainable codebase that supports future development phases.
+            </p>
+            <p>
+              <strong>Innovation Potential:</strong> Foundation architecture that clearly supports 
+              the next phase of LLM-powered automation and AI integration.
             </p>
           </div>
         </ContentSection>

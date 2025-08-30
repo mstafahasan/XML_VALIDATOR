@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
-import { Code, Shield, Zap, Users, Award, Globe } from 'lucide-react';
+import { Code, Shield, Zap, FileText, CheckCircle, AlertCircle, Brain, Rocket } from 'lucide-react';
 
 const AboutContainer = styled.div`
   min-height: 100vh;
@@ -20,7 +20,7 @@ const HeroTitle = styled(motion.h1)`
   margin-bottom: 1rem;
   background: linear-gradient(135deg, #fff 0%, #e0e7ff 100%);
   -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  -webkit-background-fill-color: transparent;
   background-clip: text;
 
   @media (max-width: 768px) {
@@ -111,30 +111,25 @@ const FeatureDescription = styled.p`
   line-height: 1.6;
 `;
 
-const StatsSection = styled.div`
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 2rem;
-  margin: 3rem 0;
-`;
-
-const StatCard = styled.div`
-  text-align: center;
-  padding: 2rem;
+const PhaseSection = styled.div`
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border-radius: 16px;
   color: white;
+  padding: 2rem;
+  border-radius: 16px;
+  margin: 2rem 0;
+  text-align: center;
 `;
 
-const StatNumber = styled.div`
-  font-size: 2.5rem;
-  font-weight: 700;
-  margin-bottom: 0.5rem;
+const PhaseTitle = styled.h3`
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
 `;
 
-const StatLabel = styled.div`
-  font-size: 1rem;
+const PhaseDescription = styled.p`
+  font-size: 1.1rem;
   opacity: 0.9;
+  line-height: 1.6;
 `;
 
 const About = () => {
@@ -146,14 +141,14 @@ const About = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
         >
-          About XML Validator Pro
+          XML Schema Validator Pro
         </HeroTitle>
         <HeroSubtitle
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2 }}
         >
-          Empowering developers and enterprises with professional-grade XML schema validation tools
+          Phase 1: Foundation for AI-Powered Verification Framework
         </HeroSubtitle>
       </HeroSection>
 
@@ -163,21 +158,22 @@ const About = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.4 }}
         >
-          <SectionTitle>Our Mission</SectionTitle>
+          <SectionTitle>Project Overview</SectionTitle>
           <SectionContent>
             <p>
-              XML Validator Pro was created with a simple yet powerful mission: to provide developers, 
-              data engineers, and enterprises with the most reliable, efficient, and user-friendly XML 
-              schema validation solution available.
+              This XML Schema Validator represents the foundational phase of a comprehensive 
+              AI-powered verification framework being developed for graduation project sponsorship 
+              from Siemens Digital Industries Software.
             </p>
             <p>
-              In today's data-driven world, XML remains a critical format for data exchange, configuration 
-              files, and API responses. Ensuring the integrity and validity of XML data is paramount for 
-              maintaining system reliability and data quality.
+              The project aims to demonstrate advanced capabilities in digital design verification, 
+              ML/AI integration, and automated testing frameworks that align with Siemens' 
+              industry-leading standards for verification and validation.
             </p>
             <p>
-              Our platform combines cutting-edge technology with intuitive design to deliver a validation 
-              experience that's both powerful and accessible to users of all skill levels.
+              This phase establishes the core infrastructure and user interface for XML validation, 
+              setting the stage for the next phase: LLM-powered automation and intelligent 
+              verification processes.
             </p>
           </SectionContent>
         </ContentSection>
@@ -187,16 +183,16 @@ const About = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.6 }}
         >
-          <SectionTitle>Key Features</SectionTitle>
+          <SectionTitle>Phase 1: Current Implementation</SectionTitle>
           <FeaturesGrid>
             <FeatureCard>
               <FeatureIcon>
-                <Shield size={28} />
+                <FileText size={28} />
               </FeatureIcon>
-              <FeatureTitle>Schema Validation</FeatureTitle>
+              <FeatureTitle>Schema Management</FeatureTitle>
               <FeatureDescription>
-                Validate XML files against XSD schemas with comprehensive error reporting and detailed 
-                validation results that help you identify and fix issues quickly.
+                Robust XSD schema upload and parsing system that forms the foundation for 
+                automated verification workflows.
               </FeatureDescription>
             </FeatureCard>
 
@@ -204,10 +200,32 @@ const About = () => {
               <FeatureIcon>
                 <Zap size={28} />
               </FeatureIcon>
-              <FeatureTitle>Batch Processing</FeatureTitle>
+              <FeatureTitle>Validation Engine</FeatureTitle>
               <FeatureDescription>
-                Process multiple XML files simultaneously for efficient validation of large datasets 
-                and improved productivity in enterprise environments.
+                High-performance XML validation against XSD schemas with comprehensive 
+                error reporting and result categorization.
+              </FeatureDescription>
+            </FeatureCard>
+
+            <FeatureCard>
+              <FeatureIcon>
+                <CheckCircle size={28} />
+              </FeatureIcon>
+              <FeatureTitle>Results Analysis</FeatureTitle>
+              <FeatureDescription>
+                Detailed validation results with expandable error details, providing 
+                insights for automated debugging and optimization.
+              </FeatureDescription>
+            </FeatureCard>
+
+            <FeatureCard>
+              <FeatureIcon>
+                <AlertCircle size={28} />
+              </FeatureIcon>
+              <FeatureTitle>Error Intelligence</FeatureTitle>
+              <FeatureDescription>
+                Structured error reporting system designed to feed into future ML models 
+                for automated problem diagnosis and resolution.
               </FeatureDescription>
             </FeatureCard>
 
@@ -215,91 +233,58 @@ const About = () => {
               <FeatureIcon>
                 <Code size={28} />
               </FeatureIcon>
-              <FeatureTitle>Professional API</FeatureTitle>
+              <FeatureTitle>Modern Architecture</FeatureTitle>
               <FeatureDescription>
-                Built with modern web technologies and RESTful APIs, making it easy to integrate 
-                with existing development workflows and automation systems.
+                Scalable React/Flask architecture that can easily integrate with AI/ML 
+                components and enterprise verification systems.
               </FeatureDescription>
             </FeatureCard>
 
             <FeatureCard>
               <FeatureIcon>
-                <Users size={28} />
-              </FeatureIcon>
-              <FeatureTitle>Team Collaboration</FeatureTitle>
-              <FeatureDescription>
-                Designed for team environments with features that support collaborative development, 
-                code review, and shared validation workflows.
-              </FeatureDescription>
-            </FeatureCard>
-
-            <FeatureCard>
-              <FeatureIcon>
-                <Award size={28} />
+                <Shield size={28} />
               </FeatureIcon>
               <FeatureTitle>Enterprise Ready</FeatureTitle>
               <FeatureDescription>
-                Built with enterprise-grade security, scalability, and reliability to meet the 
-                demands of large organizations and critical business applications.
-              </FeatureDescription>
-            </FeatureCard>
-
-            <FeatureCard>
-              <FeatureIcon>
-                <Globe size={28} />
-              </FeatureIcon>
-              <FeatureTitle>Global Accessibility</FeatureTitle>
-              <FeatureDescription>
-                Cloud-based platform accessible from anywhere in the world, with support for 
-                multiple languages and regional compliance requirements.
+                Professional-grade interface and API design that meets industry standards 
+                for verification tool integration.
               </FeatureDescription>
             </FeatureCard>
           </FeaturesGrid>
         </ContentSection>
+
+        <PhaseSection>
+          <PhaseTitle>🚀 Next Phase: LLM-Powered Automation</PhaseTitle>
+          <PhaseDescription>
+            Building upon this foundation, the next phase will integrate Large Language Models (LLMs) 
+            to automate verification processes, generate intelligent test cases, and provide 
+            AI-driven insights for complex verification scenarios. This aligns with Siemens' 
+            vision for AI-based verification frameworks and automated testing solutions.
+          </PhaseDescription>
+        </PhaseSection>
 
         <ContentSection
           initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.8 }}
         >
-          <SectionTitle>Why Choose XML Validator Pro?</SectionTitle>
+          <SectionTitle>Alignment with Siemens Objectives</SectionTitle>
           <SectionContent>
             <p>
-              <strong>Reliability:</strong> Our validation engine is built on proven XML parsing 
-              technologies and has been tested with millions of files across diverse use cases.
+              This project directly addresses Siemens' focus areas for graduation projects:
             </p>
-            <p>
-              <strong>Performance:</strong> Optimized for speed and efficiency, capable of processing 
-              large files and batch operations without compromising accuracy.
-            </p>
-            <p>
-              <strong>User Experience:</strong> Intuitive interface designed by UX experts, making 
-              complex validation tasks simple and straightforward.
-            </p>
-            <p>
-              <strong>Support:</strong> Comprehensive documentation, tutorials, and dedicated support 
-              to help you get the most out of our platform.
+            <ul style={{ marginLeft: '2rem', marginTop: '1rem' }}>
+              <li><strong>Digital Design & Verification:</strong> Core XML validation and schema management</li>
+              <li><strong>ML/AI in Software Testing:</strong> Foundation for LLM-powered verification automation</li>
+              <li><strong>Functional Verification Domain:</strong> Structured validation workflows and error analysis</li>
+              <li><strong>EDA Algorithms:</strong> Automated verification processes and result analysis</li>
+            </ul>
+            <p style={{ marginTop: '1rem' }}>
+              The project demonstrates the team's capability to build enterprise-grade verification tools 
+              while preparing for advanced AI integration that will drive productivity and manage complexity 
+              in sophisticated verification environments.
             </p>
           </SectionContent>
-
-          <StatsSection>
-            <StatCard>
-              <StatNumber>99.9%</StatNumber>
-              <StatLabel>Uptime</StatLabel>
-            </StatCard>
-            <StatCard>
-              <StatNumber>10M+</StatNumber>
-              <StatLabel>Files Processed</StatLabel>
-            </StatCard>
-            <StatCard>
-              <StatNumber>50K+</StatNumber>
-              <StatLabel>Happy Users</StatLabel>
-            </StatCard>
-            <StatCard>
-              <StatNumber>24/7</StatNumber>
-              <StatLabel>Support</StatLabel>
-            </StatCard>
-          </StatsSection>
         </ContentSection>
 
         <ContentSection
@@ -307,21 +292,47 @@ const About = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 1.0 }}
         >
-          <SectionTitle>Technology Stack</SectionTitle>
+          <SectionTitle>Technical Foundation</SectionTitle>
           <SectionContent>
             <p>
-              XML Validator Pro is built using modern, industry-standard technologies:
+              Built using industry-standard technologies that align with Siemens' technical requirements:
             </p>
             <ul style={{ marginLeft: '2rem', marginTop: '1rem' }}>
-              <li><strong>Frontend:</strong> React.js with styled-components for a modern, responsive UI</li>
-              <li><strong>Backend:</strong> Python Flask for robust API endpoints and validation logic</li>
-              <li><strong>Validation Engine:</strong> xmlschema library for accurate XSD validation</li>
-              <li><strong>Infrastructure:</strong> Cloud-native architecture for scalability and reliability</li>
-              <li><strong>Security:</strong> Enterprise-grade security measures and data protection</li>
+              <li><strong>Frontend:</strong> React.js with styled-components for professional UI/UX</li>
+              <li><strong>Backend:</strong> Python Flask with xmlschema for robust validation</li>
+              <li><strong>Architecture:</strong> RESTful API design for enterprise integration</li>
+              <li><strong>Validation Engine:</strong> xmlschema library for industry-standard XSD validation</li>
+              <li><strong>File Handling:</strong> React Dropzone for enterprise-grade file management</li>
+              <li><strong>Responsive Design:</strong> Mobile-first approach for accessibility</li>
             </ul>
             <p style={{ marginTop: '1rem' }}>
-              Our technology choices ensure that the platform is not only powerful and reliable 
-              but also future-proof and easily maintainable.
+              The modular architecture ensures easy integration with future AI/ML components and 
+              enterprise verification frameworks, demonstrating scalability and maintainability.
+            </p>
+          </SectionContent>
+        </ContentSection>
+
+        <ContentSection
+          initial={{ opacity: 0, y: 50 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 1.2 }}
+        >
+          <SectionTitle>Project Impact & Innovation</SectionTitle>
+          <SectionContent>
+            <p>
+              This project represents a significant step toward the future of verification automation:
+            </p>
+            <ul style={{ marginLeft: '2rem', marginTop: '1rem' }}>
+              <li><strong>Innovation:</strong> First phase of AI-powered verification framework</li>
+              <li><strong>Industry Alignment:</strong> Addresses Siemens' verification automation needs</li>
+              <li><strong>Scalability:</strong> Foundation for enterprise-level verification tools</li>
+              <li><strong>Learning Value:</strong> Demonstrates advanced web development and API design</li>
+              <li><strong>Future Ready:</strong> Architecture prepared for AI/ML integration</li>
+            </ul>
+            <p style={{ marginTop: '1rem' }}>
+              By completing this foundation phase, the team demonstrates the technical capability, 
+              project management skills, and innovative thinking required for Siemens sponsorship 
+              and future industry collaboration.
             </p>
           </SectionContent>
         </ContentSection>

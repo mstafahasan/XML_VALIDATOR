@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import { Github, Linkedin, Mail, Heart } from 'lucide-react';
+import { Github, Code, Heart, Brain, Rocket } from 'lucide-react';
 
 const FooterContainer = styled.footer`
   background: rgba(0, 0, 0, 0.8);
@@ -92,47 +92,48 @@ const Footer = () => {
     <FooterContainer>
       <FooterContent>
         <FooterSection>
-          <h3>XML Validator Pro</h3>
-          <p>Professional XML Schema validation tool for developers and enterprises.</p>
-          <p>Validate your XML files against XSD schemas with ease and confidence.</p>
+          <h3>AI-Powered Verification Framework</h3>
+          <p>Phase 1: XML Schema Validator with React and Flask.</p>
+          <p>Foundation for LLM-powered automation in digital design verification.</p>
         </FooterSection>
 
         <FooterSection>
-          <h3>Quick Links</h3>
+          <h3>Project Navigation</h3>
           <p><a href="/">Home</a></p>
-          <p><a href="/about">About</a></p>
-          <p><a href="/support">Support</a></p>
+          <p><a href="/about">About & Roadmap</a></p>
+          <p><a href="/support">Support & Resources</a></p>
         </FooterSection>
 
         <FooterSection>
-          <h3>Features</h3>
+          <h3>Current Capabilities</h3>
           <p>• XSD Schema Validation</p>
-          <p>• Batch File Processing</p>
-          <p>• Detailed Error Reporting</p>
-          <p>• Professional UI/UX</p>
+          <p>• Professional UI/UX Design</p>
+          <p>• Comprehensive Error Reporting</p>
+          <p>• Enterprise-Ready Architecture</p>
         </FooterSection>
 
         <FooterSection>
-          <h3>Connect</h3>
-          <p>Get in touch with our team for support and feedback.</p>
+          <h3>Next Phase Development</h3>
+          <p>LLM-powered automation for verification processes.</p>
+          <p>AI-driven test case generation and intelligent debugging.</p>
           <SocialLinks>
             <SocialLink href="https://github.com" target="_blank" rel="noopener noreferrer">
               <Github size={20} />
             </SocialLink>
-            <SocialLink href="https://linkedin.com" target="_blank" rel="noopener noreferrer">
-              <Linkedin size={20} />
+            <SocialLink href="/about" title="View Technology Stack">
+              <Code size={20} />
             </SocialLink>
-            <SocialLink href="mailto:support@xmlvalidator.com">
-              <Mail size={20} />
+            <SocialLink href="/about" title="AI Integration Roadmap">
+              <Brain size={20} />
             </SocialLink>
           </SocialLinks>
         </FooterSection>
       </FooterContent>
 
       <BottomBar>
-        <span>Made with</span>
+        <span>Phase 1 Implementation for</span>
         <HeartIcon size={16} />
-        <span>for the developer community</span>
+        <span>Siemens Sponsorship Application</span>
       </BottomBar>
     </FooterContainer>
   );
