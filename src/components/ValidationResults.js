@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { motion, AnimatePresence } from 'framer-motion';
-import { CheckCircle, XCircle, AlertCircle, ChevronDown, ChevronRight, FileText, Info } from 'lucide-react';
+import { CheckCircle, XCircle, ChevronDown, ChevronRight, FileText, Info } from 'lucide-react';
 
 const ResultsContainer = styled.div`
   margin-top: 3rem;
@@ -137,6 +137,12 @@ const FileStatus = styled.div`
   }
 `;
 
+const FileSize = styled.div`
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin-top: 0.5rem;
+`;
+
 const ExpandButton = styled.button`
   background: none;
   border: none;
@@ -190,39 +196,6 @@ const ValidationResults = ({ results }) => {
     setExpandedFiles(newExpanded);
   };
 
-  const getStatusIcon = (status) => {
-    switch (status) {
-      case 'VALID':
-        return <CheckCircle size={16} />;
-      case 'INVALID':
-        return <XCircle size={16} />;
-      default:
-        return <AlertCircle size={16} />;
-    }
-  };
-
-  const getStatusColor = (status) => {
-    switch (status) {
-      case 'VALID':
-        return 'valid';
-      case 'INVALID':
-        return 'invalid';
-      default:
-        return 'info';
-    }
-  };
-
-  const getStatusText = (status) => {
-    switch (status) {
-      case 'VALID':
-        return 'Valid';
-      case 'INVALID':
-        return 'Invalid';
-      default:
-        return 'Unknown';
-    }
-  };
-
   if (!results) return null;
 
   return (
@@ -234,7 +207,7 @@ const ValidationResults = ({ results }) => {
             <SchemaInfo>
               <SchemaText>
                 <Info size={16} style={{ marginRight: '0.5rem', verticalAlign: 'middle' }} />
-                {results.schema}
+                Schema: {results.schema.filename} ({results.schema.size} bytes)
               </SchemaText>
             </SchemaInfo>
           )}
@@ -265,13 +238,14 @@ const ValidationResults = ({ results }) => {
                     <FileHeader>
                       <FileName>
                         <FileText size={16} />
-                        {file.name}
+                        {file.filename}
                       </FileName>
                       <FileStatus className="valid">
-                        {getStatusIcon(file.status)}
-                        {getStatusText(file.status)}
+                        <CheckCircle size={16} />
+                        Valid
                       </FileStatus>
                     </FileHeader>
+                    <FileSize>Size: {file.size} bytes</FileSize>
                   </FileItem>
                 ))}
               </AnimatePresence>
@@ -298,20 +272,20 @@ const ValidationResults = ({ results }) => {
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.1 }}
-                    onClick={() => toggleFileExpansion(file.name)}
+                    onClick={() => toggleFileExpansion(file.filename)}
                   >
                     <FileHeader>
                       <FileName>
                         <FileText size={16} />
-                        {file.name}
+                        {file.filename}
                       </FileName>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                         <FileStatus className="invalid">
-                          {getStatusIcon(file.status)}
-                          {getStatusText(file.status)}
+                          <XCircle size={16} />
+                          Invalid
                         </FileStatus>
                         <ExpandButton>
-                          {expandedFiles.has(file.name) ? (
+                          {expandedFiles.has(file.filename) ? (
                             <ChevronDown size={16} />
                           ) : (
                             <ChevronRight size={16} />
@@ -320,8 +294,10 @@ const ValidationResults = ({ results }) => {
                       </div>
                     </FileHeader>
                     
+                    <FileSize>Size: {file.size} bytes</FileSize>
+                    
                     <AnimatePresence>
-                      {expandedFiles.has(file.name) && file.error && (
+                      {expandedFiles.has(file.filename) && file.error && (
                         <ErrorDetails
                           initial={{ opacity: 0, height: 0 }}
                           animate={{ opacity: 1, height: 'auto' }}

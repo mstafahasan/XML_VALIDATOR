@@ -254,15 +254,34 @@ const Support = () => {
     e.preventDefault();
     setIsSubmitting(true);
     
-    // Simulate form submission
-    setTimeout(() => {
+    try {
+      // Send message to Flask backend
+      const response = await fetch('/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData)
+      });
+
+      const result = await response.json();
+
+      if (response.ok && result.success) {
+        setIsSubmitted(true);
+        setFormData({ name: '', email: '', subject: '', message: '' });
+        
+        // Reset success message after 5 seconds
+        setTimeout(() => setIsSubmitted(false), 5000);
+      } else {
+        // Handle error from backend
+        alert(`Error: ${result.error || 'Failed to send message'}`);
+      }
+    } catch (error) {
+      console.error('Error sending message:', error);
+      alert('Failed to send message. Please try again.');
+    } finally {
       setIsSubmitting(false);
-      setIsSubmitted(true);
-      setFormData({ name: '', email: '', subject: '', message: '' });
-      
-      // Reset success message after 5 seconds
-      setTimeout(() => setIsSubmitted(false), 5000);
-    }, 2000);
+    }
   };
 
   return (
@@ -484,6 +503,26 @@ const Support = () => {
             <p>
               <strong>Innovation Potential:</strong> Foundation architecture that clearly supports 
               the next phase of LLM-powered automation and AI integration.
+            </p>
+          </div>
+        </ContentSection>
+
+        <ContentSection
+          initial={{ opacity: 0, y: 50 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 1.2 }}
+        >
+          <SectionTitle>Project Support & Contact</SectionTitle>
+          <div style={{ textAlign: 'center', marginBottom: '2rem', color: '#666', lineHeight: '1.8' }}>
+            <p>
+              <strong>For Technical Support:</strong> Use the contact form below to reach our development team.
+            </p>
+            <p>
+              <strong>For Project Inquiries:</strong> Contact us about collaboration opportunities, 
+              technical questions, or feedback on the verification framework.
+            </p>
+            <p>
+              <strong>Response Time:</strong> We typically respond within 24-48 hours during business days.
             </p>
           </div>
         </ContentSection>
