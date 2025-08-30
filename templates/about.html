@@ -1,0 +1,51 @@
+<!-- templates/about.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>About - GP XML Validation Tool</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="bg-gray-50 text-gray-800 font-sans">
+  <!-- Header -->
+  <header class="bg-white shadow-md">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+      <div class="flex items-center space-x-4">
+        <img src="{{ url_for('static', filename='images/logo.png') }}" alt="xAI Logo" class="w-10 h-10" onerror="this.src='https://via.placeholder.com/40?text=xAI';">
+        <h1 class="text-2xl font-bold text-gray-900">GP XML Validation Tool</h1>
+      </div>
+      <nav class="space-x-6">
+        <a href="/" class="text-gray-600 hover:text-gray-900">Home</a>
+        <a href="/about" class="text-gray-600 hover:text-gray-900">About</a>
+        <a href="/support" class="text-gray-600 hover:text-gray-900">Support</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <section class="bg-white rounded-lg shadow-lg p-6">
+      <h2 class="text-xl font-semibold text-gray-900 mb-6">About This Tool</h2>
+      <p class="text-gray-700 mb-4">The xAI XML Validation Tool is a professional-grade application designed to validate XML files against a specified schema. It supports both valid and invalid XML files for comprehensive testing.</p>
+      <p class="text-gray-700 mb-4">Built with Flask and xmlschema libraries, this tool provides accurate validation results in a user-friendly interface. It's ideal for developers, testers, and anyone working with XML data in embedded systems or AUTOSAR environments.</p>
+      <p class="text-gray-700">Version: 1.0 | Developed by xAI Team | Last Updated: August 30, 2025</p>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-gray-800 text-white mt-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      <div class="flex flex-col md:flex-row justify-between items-center">
+        <p>&copy; 2025 GP. All rights reserved.</p>
+        <div class="space-x-4 mt-4 md:mt-0">
+          <a href="#" class="text-gray-300 hover:text-white">Privacy Policy</a>
+          <a href="#" class="text-gray-300 hover:text-white">Terms of Service</a>
+          <a href="/support" class="text-gray-300 hover:text-white">Contact Us</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

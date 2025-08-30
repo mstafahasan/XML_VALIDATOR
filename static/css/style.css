@@ -1,0 +1,19 @@
+/* static/css/style.css */
+.logo-placeholder {
+  background-color: #1d4ed8; /* Blue placeholder */
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+}
+.results-highlight {
+  transition: background-color 0.3s ease;
+}
+.results-highlight:hover {
+  background-color: #f3f4f6;
+}
+body {
+  line-height: 1.6;
+}
+a {
+  transition: color 0.2s ease;
+}

@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<AR-PACKAGE>
+  <ELEMENTS>
+    <Simulation-Time value="1000" unit="ms"/>
+    <SENDER-RECEIVER-INTERFACE>
+      <SHORT-NAME name="Interface1"/>
+      <DATA-ELEMENTS>
+        <VARIABLE-DATA-PROTOTYPE>
+          <SHORT-NAME name="DataProto1"/>
+          <TYPE-TREF>
+            <Array-of-uint8 No_Of_Bytes="1024">
+              <Random-Values-generated>
+                <Data-Range min="0" max="255"/>
+              </Random-Values-generated>
+            </Array-of-uint8>
+          </TYPE-TREF>
+        </VARIABLE-DATA-PROTOTYPE>
+        <VARIABLE-DATA-PROTOTYPE>
+          <SHORT-NAME name="DataProto2"/>
+          <TYPE-TREF>
+            <Array-of-float No_Of_Elements="512">
+              <Fixed-values-generated Default-Value="1.5"/>
+            </Array-of-float>
+          </TYPE-TREF>
+        </VARIABLE-DATA-PROTOTYPE>
+      </DATA-ELEMENTS>
+    </SENDER-RECEIVER-INTERFACE>
+    <SENDER-RECEIVER-INTERFACE>
+      <SHORT-NAME name="Interface2"/>
+      <DATA-ELEMENTS>
+        <VARIABLE-DATA-PROTOTYPE>
+          <SHORT-NAME name="DataProto3"/>
+          <TYPE-TREF>
+            <Array-of-uint8 No_Of_Bytes="2048">
+              <Fixed-values-generated Default-Value="128"/>
+            </Array-of-uint8>
+          </TYPE-TREF>
+        </VARIABLE-DATA-PROTOTYPE>
+      </DATA-ELEMENTS>
+    </SENDER-RECEIVER-INTERFACE>
+    <APPLICATION-SW-COMPONENT-TYPE>
+      <SHORT-NAME name="SWC1"/>
+      <PORTS>
+        <P-PORT-PROTOTYPE>
+          <SHORT-NAME name="Port1"/>
+          <PROVIDED-INTERFACE-TREF DEST="/Interface1"/>
+        </P-PORT-PROTOTYPE>
+        <R-PORT-PROTOTYPE>
+          <SHORT-NAME name="Port2"/>
+          <REQUIRED-INTERFACE-TREF DEST="/Interface2"/>
+        </R-PORT-PROTOTYPE>
+      </PORTS>
+      <INTERNAL-BEHAVIORS>
+        <SWC-INTERNAL-BEHAVIOR>
+          <SHORT-NAME name="Behavior1"/>
+          <RUNNABLES>
+            <RUNNABLE-ENTITY>
+              <SHORT-NAME name="Runnable1"/>
+              <DATA-READ-ACCESS>
+                <VARIABLE-ACCESS>
+                  <SHORT-NAME name="Access1"/>
+                  <ACCESSED-VARIABLE>
+                    <AUTOSAR-VARIABLE-IREF>
+                      <PORT-PROTOTYPE-REF DEST="/SWC1/Port2"/>
+                      <TARGET-DATA-PROTOTYPE-REF DEST="/Interface2/DataProto3"/>
+                    </AUTOSAR-VARIABLE-IREF>
+                  </ACCESSED-VARIABLE>
+                </VARIABLE-ACCESS>
+              </DATA-READ-ACCESS>
+              <DATA-WRITE-ACCESS>
+                <VARIABLE-ACCESS>
+                  <SHORT-NAME name="Access2"/>
+                  <ACCESSED-VARIABLE>
+                    <AUTOSAR-VARIABLE-IREF>
+                      <PORT-PROTOTYPE-REF DEST="/SWC1/Port1"/>
+                      <TARGET-DATA-PROTOTYPE-REF DEST="/Interface1/DataProto1"/>
+                    </AUTOSAR-VARIABLE-IREF>
+                  </ACCESSED-VARIABLE>
+                </VARIABLE-ACCESS>
+              </DATA-WRITE-ACCESS>
+            </RUNNABLE-ENTITY>
+          </RUNNABLES>
+          <EVENTS>
+            <TIMING-EVENT>
+              <SHORT-NAME name="Event1"/>
+              <START-ON-EVENT-REF DEST="/SWC1/Behavior1/Runnable1"/>
+              <PERIOD value="500" unit="ms"/>
+            </TIMING-EVENT>
+            <DATA-RECEIVED-EVENT>
+              <SHORT-NAME name="Event2"/>
+              <START-ON-EVENT-REF DEST="/SWC1/Behavior1/Runnable1"/>
+              <DATA-IREF>
+                <TARGET-DATA-ELEMENT-REF DEST="/SWC1/Behavior1/Runnable1/DataProto3"/>
+              </DATA-IREF>
+            </DATA-RECEIVED-EVENT>
+          </EVENTS>
+        </SWC-INTERNAL-BEHAVIOR>
+      </INTERNAL-BEHAVIORS>
+    </APPLICATION-SW-COMPONENT-TYPE>
+    <SWC-CUSTOM-BEHAVIOR>
+      <SHORT-NAME name="CustomBehavior1"/>
+      <OPERATIONS-SEQUENCE>
+        <OPERATION>
+          <READ>
+            <IREF DEST="/SWC1/Behavior1/Runnable1/Access1"/>
+          </READ>
+        </OPERATION>
+        <OPERATION>
+          <WRITE>
+            <IREF DEST="/SWC1/Behavior1/Runnable1/Access2"/>
+          </WRITE>
+        </OPERATION>
+        <OPERATION>
+          <LATENCY value="10" unit="us"/>
+        </OPERATION>
+        <OPERATION>
+          <LOAD value="1000"/>
+        </OPERATION>
+        <OPERATION>
+          <CONVOLUTION height="512" width="512" channels="3" kernelSize="5"/>
+        </OPERATION>
+      </OPERATIONS-SEQUENCE>
+    </SWC-CUSTOM-BEHAVIOR>
+    <PRE-BUILT-APPLICATION>
+      <SHORT-NAME name="App1"/>
+      <PATH DEST="/path/to/app"/>
+    </PRE-BUILT-APPLICATION>
+    <Network-Topology>
+      <InterECU_communication>
+        <CAN-BUS CAN-FD="true">
+          <SHORT-NAME name="CAN1"/>
+          <BaudRate value="1000000"/>
+          <INTERFACE-TREF DEST="/Interface1"/>
+        </CAN-BUS>
+        <Eth-Switch>
+          <SHORT-NAME name="Switch1"/>
+          <INTERFACE-TREF DEST="/Interface2"/>
+        </Eth-Switch>
+      </InterECU_communication>
+    </Network-Topology>
+    <ECUs>
+      <SHORT-NAME name="ECU1"/>
+      <SoCs>
+        <SHORT-NAME name="SoC1"/>
+        <AXI-BUS width="8" frequency="200000000"/>
+        <ETHERNET-INTERFACE Mode="simulated"/>
+        <UCIe-INTERFACE Mode="host">
+          <D2D_Configuration DestChipletRef="/ECU1/SoC1">
+            <LINK_WIDTH value="512"/>
+            <LINK_FREQUENCY value="500000000"/>
+            <PROTOCOL_CONV_LATENCY value="10" unit="ns"/>
+            <CHIPLET_LINK_LATENCY value="5" unit="ns"/>
+            <LOGICAL_IF_DELAY value="8" unit="ns"/>
+            <PHYSICAL_IF_DELAY value="7" unit="ns"/>
+          </D2D_Configuration>
+        </UCIe-INTERFACE>
+        <CPU_Cluster>
+          <Operating-System>
+            <Nucleus_RTOS Affine-tasks-byOS="true" Show_UART_Terminal="false"/>
+          </Operating-System>
+          <ARMV8-Family>
+            <CortexA53 CoresPerCluster="4">
+              <SHORT-NAME name="Cluster1"/>
+              <Frequency value="800000000"/>
+            </CortexA53>
+          </ARMV8-Family>
+        </CPU_Cluster>
+        <Generic_Hardware>
+          <SHORT-NAME name="HW1"/>
+          <Frequency value="100000000"/>
+          <AXI-Master-Port priority="10"/>
+          <MEMORY-INTERFACE InternalMemory="true"/>
+          <INTERNAL-BEHAVIOR>
+            <PORTS>
+              <P-PORT-PROTOTYPE>
+                <SHORT-NAME name="Pport1"/>
+                <PROVIDED-INTERFACE-TREF DEST="/Interface1"/>
+              </P-PORT-PROTOTYPE>
+            </PORTS>
+            <OPERATIONS-SEQUENCE>
+              <OPERATION>
+                <MAX-POOL height="1024" width="1024" channels="3" kernelSize="3" stride="2"/>
+              </OPERATION>
+            </OPERATIONS-SEQUENCE>
+            <EVENT>
+              <TIMING-EVENT>
+                <PERIOD value="200" unit="ms"/>
+              </TIMING-EVENT>
+            </EVENT>
+          </INTERNAL-BEHAVIOR>
+          <POWER-PARAMETERS Split_power_mw="15.0" Delay_power_mw="12.0" Sequential_power_mw="14.0" Static_Power_Leakage_mw="0.1" Clock_Tree_Power_mw="2.0" Power_Per_Nominal_Clock_Mhz="150"/>
+        </Generic_Hardware>
+      </SoCs>
+    </ECUs>
+    <HW-SW-MAPPING ClusterRef="/ECU1/SoC1/Cluster1">
+      <Core-Runnable-Mapping CoreId="0" RunnableRef="/SWC1/Behavior1/Runnable1" Load="5000" Priority="50"/>
+    </HW-SW-MAPPING>
+    <Analysis>
+      <SW-Analysis-Enable>
+        <ALL-SoCs>enabled</ALL-SoCs>
+      </SW-Analysis-Enable>
+    </Analysis>
+  </ELEMENTS>
+</AR-PACKAGE>
