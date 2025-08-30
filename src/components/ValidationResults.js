@@ -285,7 +285,7 @@ const ValidationResults = ({ results }) => {
               <CardTitle>
                 <CardIcon className="invalid">
                   <XCircle size={20} />
-                </CardTitle>
+                </CardIcon>
                 Invalid Files
               </CardTitle>
               <FileCount>{results.invalid.length}</FileCount>
