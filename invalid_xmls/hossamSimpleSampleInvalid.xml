@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<System>
+  <ECU name="EngineControl" cpuType="MIPS" protocol="CAN">
+    <HWIP type="UART"/>
+    <HWIP/> <!-- missing required type -->
+  </ECU>
+</System>
