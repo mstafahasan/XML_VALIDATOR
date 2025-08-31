@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<System name="DemoSystem">
+  <ECU name="BodyController" cpuType="ARM" protocol="CAN" cpuMHz="200">
+    <HWIP type="UART"/>
+    <HWIP type="SPI"/>
+  </ECU>
+  <ECU name="Infotainment" cpuType="RISC-V" protocol="Ethernet" cpuMHz="800">
+    <HWIP type="I2C"/>
+  </ECU>
+</System>
