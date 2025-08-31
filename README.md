@@ -2,7 +2,7 @@
 
 A professional-grade XML Schema validation tool built with React and Flask, featuring a modern, responsive UI and powerful validation capabilities.
 
-## 🚀 Features
+##  Features
 
 - **Professional UI/UX**: Modern React-based interface with smooth animations and responsive design
 - **Drag & Drop File Upload**: Intuitive file handling with visual feedback
@@ -12,7 +12,7 @@ A professional-grade XML Schema validation tool built with React and Flask, feat
 - **Mobile Responsive**: Works seamlessly on all devices
 - **Modern Tech Stack**: Built with React 18, styled-components, and Framer Motion
 
-## 🛠️ Technology Stack
+##  Technology Stack
 
 ### Frontend
 - **React 18** - Modern React with hooks and functional components
@@ -28,7 +28,7 @@ A professional-grade XML Schema validation tool built with React and Flask, feat
 - **xmlschema** - XML Schema validation library
 - **Python 3.8+** - Modern Python features
 
-## 📁 Project Structure
+##  Project Structure
 
 ```
 schema/
@@ -51,7 +51,7 @@ schema/
 └── README.md                  # This file
 ```
 
-## 🚀 Getting Started
+##  Getting Started
 
 ### Prerequisites
 
@@ -93,7 +93,7 @@ schema/
    - Frontend: http://localhost:3000
    - Backend: http://localhost:5000
 
-## 🎯 Usage
+##  Usage
 
 ### Basic Validation
 
@@ -115,7 +115,7 @@ schema/
 - **Batch Processing**: Multiple file validation
 - **Result Categorization**: Separate valid/invalid file lists
 
-## 🎨 Design Features
+##  Design Features
 
 ### Modern UI Elements
 - **Glassmorphism**: Translucent, frosted glass effects
@@ -131,7 +131,7 @@ schema/
 - **Error Handling**: User-friendly error messages
 - **Success Feedback**: Confirmation of completed actions
 
-## 🔧 Configuration
+##  Configuration
 
 ### Frontend Configuration
 
@@ -151,14 +151,14 @@ Flask server runs on port 5000 with debug mode enabled:
 app.run(debug=True, host='0.0.0.0', port=5000)
 ```
 
-## 📱 Responsive Design
+##  Responsive Design
 
 The application is fully responsive and works on:
 - **Desktop**: Full-featured experience with side-by-side layouts
 - **Tablet**: Optimized for medium screens
 - **Mobile**: Touch-friendly interface with mobile navigation
 
-## 🚀 Deployment
+##  Deployment
 
 ### Production Build
 
@@ -181,7 +181,7 @@ The Flask backend can be deployed using:
 - **Docker** for containerized deployment
 - **Cloud platforms** like Heroku, AWS, or Google Cloud
 
-## 🤝 Contributing
+##  Contributing
 
 1. Fork the repository
 2. Create a feature branch
@@ -189,17 +189,17 @@ The Flask backend can be deployed using:
 4. Add tests if applicable
 5. Submit a pull request
 
-## 📄 License
+##  License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
 
-## 🆘 Support
+##  Support
 
 - **Documentation**: Check the About and Support pages
 - **Issues**: Report bugs via GitHub Issues
 - **Contact**: Use the contact form on the Support page
 
-## 🙏 Acknowledgments
+##  Acknowledgments
 
 - **React Team** for the amazing frontend framework
 - **Flask Team** for the lightweight Python web framework
@@ -207,6 +207,4 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 - **Styled Components** for CSS-in-JS styling
 - **Lucide** for beautiful icons
 
----
 
-Built with ❤️ for the developer community
