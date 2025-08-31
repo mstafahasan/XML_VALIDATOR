@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<AR-PACKAGE>
+  <ELEMENTS>
+    <SENDER-RECEIVER-INTERFACE>
+      <SHORT-NAME name="Interface5" />
+      <DATA-ELEMENTS>
+        <VARIABLE-DATA-PROTOTYPE>
+          <SHORT-NAME name="Var5" />
+          <TYPE-TREF>
+            <Array-of-uint8 No_Of_Bytes="-10"> <!-- Invalid: negative value -->
+              <Random-Values-generated>
+                <Data-Range min="0" max="255" />
+              </Random-Values-generated>
+            </Array-of-uint8>
+          </TYPE-TREF>
+        </VARIABLE-DATA-PROTOTYPE>
+      </DATA-ELEMENTS>
+    </SENDER-RECEIVER-INTERFACE>
+    <PRE-BUILT-APPLICATION>
+      <SHORT-NAME name="App5" />
+      <PATH DEST="" /> 
+    </PRE-BUILT-APPLICATION>
+    <Network-Topology>
+      <InterECU_communication>
+        <CAN-BUS>
+          <SHORT-NAME name="CAN5" />
+          <BaudRate value="2000000" />
+          <!-- Missing INTERFACE-TREF -->
+        </CAN-BUS>
+        <Eth-Switch>
+          <SHORT-NAME name="Eth5" />
+          <INTERFACE-TREF DEST="/Interface5" />
+        </Eth-Switch>
+      </InterECU_communication>
+    </Network-Topology>
+    <ECUs>
+      <SHORT-NAME name="ECU5" />
+      <SoCs>
+        <SHORT-NAME name="SoC5" />
+        <AXI-BUS width="64" frequency="1600000000" />
+        <ETHERNET-INTERFACE /> 
+        <UCIe-INTERFACE Mode="endpoint">
+          <D2D_Configuration> <!-- Missing required DestChipletRef attribute -->
+            <LINK_WIDTH value="2048" />
+            <!-- Missing LINK_FREQUENCY -->
+            <PROTOCOL_CONV_LATENCY value="80" unit="ns" />
+            <CHIPLET_LINK_LATENCY value="40" unit="ns" />
+            <LOGICAL_IF_DELAY value="32" unit="ns" />
+            <PHYSICAL_IF_DELAY value="16" unit="ns" />
+          </D2D_Configuration>
+        </UCIe-INTERFACE>
+        <Generic_Hardware>
+          <SHORT-NAME name="Analyzer" />
+          <Frequency value="20000000" />
+          <AXI-Master-Port priority="300" /> <!-- Invalid: priority above maxInclusive -->
+          <MEMORY-INTERFACE InternalMemory="false" />
+          <INTERNAL-BEHAVIOR>
+            <PORTS>
+              <P-PORT-PROTOTYPE>
+                <SHORT-NAME name="PPort5" />
+                <!-- Missing PROVIDED-INTERFACE-TREF -->
+              </P-PORT-PROTOTYPE>
+            </PORTS>
+            <OPERATIONS-SEQUENCE>
+              <OPERATION>
+                <HARDMAX height="128" width="128" channels="1" />
+              </OPERATION>
+            </OPERATIONS-SEQUENCE>
+            <EVENT>
+                <LOG-SOFTMAX height="128" width="128" channels="1" /> <!-- Invalid: <LOG-SOFTMAX> is not permitted inside <EVENT> by the schema. Only <TIMING-EVENT>, <DATA-RECEIVED-EVENT>, or <TRIGGER-EVENT> are allowed.  -->
+            </EVENT>
+          </INTERNAL-BEHAVIOR>
+        </Generic_Hardware>
+      </SoCs>
+    </ECUs>
+    <Analysis>
+      <SW-Analysis-Enable>
+        <!-- Missing ALL-SoCs element -->
+      </SW-Analysis-Enable>
+      <HW-Analysis-Enable>
+        <ALL-SoCs></ALL-SoCs> 
+      </HW-Analysis-Enable>
+    </Analysis>
+  </ELEMENTS>
+</AR-PACKAGE>

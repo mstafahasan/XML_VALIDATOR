@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<AR-PACKAGE>
+  <ELEMENTS>
+    <SENDER-RECEIVER-INTERFACE>
+      <SHORT-NAME name="Interface2" />
+      <DATA-ELEMENTS>
+        <VARIABLE-DATA-PROTOTYPE>
+          <SHORT-NAME name="Var2" />
+          <TYPE-TREF>
+            <Array-of-float No_Of_Elements="16">
+              <Random-Values-generated>
+                <Data-Range min="0.0" max="100.0" />
+              </Random-Values-generated>
+            </Array-of-float>
+          </TYPE-TREF>
+        </VARIABLE-DATA-PROTOTYPE>
+      </DATA-ELEMENTS>
+    </SENDER-RECEIVER-INTERFACE>
+    <PRE-BUILT-APPLICATION>
+      <SHORT-NAME name="App2" />
+      <PATH DEST="bin/app2.bin" />
+    </PRE-BUILT-APPLICATION>
+    <Network-Topology>
+      <InterECU_communication>
+        <CAN-BUS>
+          <SHORT-NAME name="CAN2" />
+          <BaudRate value="1000000" />
+          <INTERFACE-TREF DEST="/Interface2" />
+        </CAN-BUS>
+        <Eth-Switch>
+          <SHORT-NAME name="Eth2" />
+          <INTERFACE-TREF DEST="/Interface2" />
+        </Eth-Switch>
+      </InterECU_communication>
+    </Network-Topology>
+    <ECUs>
+      <SHORT-NAME name="ECU2" />
+      <SoCs>
+        <SHORT-NAME name="SoC2" />
+        <AXI-BUS width="8" frequency="200000000" />
+        <ETHERNET-INTERFACE Mode="native" />
+        <UCIe-INTERFACE Mode="endpoint">
+          <D2D_Configuration DestChipletRef="/ECU2/SoC2">
+            <LINK_WIDTH value="128" />
+            <LINK_FREQUENCY value="500000000" />
+            <PROTOCOL_CONV_LATENCY value="10" unit="ns" />
+            <CHIPLET_LINK_LATENCY value="5" unit="ns" />
+            <LOGICAL_IF_DELAY value="3" unit="ns" />
+            <PHYSICAL_IF_DELAY value="2" unit="ns" />
+          </D2D_Configuration>
+        </UCIe-INTERFACE>
+        <Generic_Hardware>
+          <SHORT-NAME name="Actuator" />
+          <Frequency value="2000000" />
+          <AXI-Master-Port priority="20" />
+          <MEMORY-INTERFACE InternalMemory="false" />
+          <INTERNAL-BEHAVIOR>
+            <PORTS>
+              <P-PORT-PROTOTYPE>
+                <SHORT-NAME name="PPort2" />
+                <PROVIDED-INTERFACE-TREF DEST="/Interface2" />
+              </P-PORT-PROTOTYPE>
+            </PORTS>
+            <OPERATIONS-SEQUENCE>
+              <OPERATION>
+                <READ>
+                  <IREF DEST="/genericHardware-name/rPort-name" />
+                </READ>
+              </OPERATION>
+            </OPERATIONS-SEQUENCE>
+            <EVENT>
+              <DATA-RECEIVED-EVENT>
+                <REQUIRED-PORT-TREF DEST="/Interface2" />
+              </DATA-RECEIVED-EVENT>
+            </EVENT>
+          </INTERNAL-BEHAVIOR>
+        </Generic_Hardware>
+      </SoCs>
+    </ECUs>
+    <Analysis>
+      <SW-Analysis-Enable>
+        <ALL-SoCs>Enabled</ALL-SoCs>
+      </SW-Analysis-Enable>
+      <HW-Analysis-Enable>
+        <ALL-SoCs>Enabled</ALL-SoCs>
+      </HW-Analysis-Enable>
+    </Analysis>
+  </ELEMENTS>
+</AR-PACKAGE>
