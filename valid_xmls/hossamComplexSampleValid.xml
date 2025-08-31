@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<AR-PACKAGE>
+  <ELEMENTS>
+
+    <!-- Keep sims bounded for demos -->
+    <Simulation-Time value="1000000" unit="us"/>
+
+    <!-- 1) Interface: byte-array payload with fixed default -->
+    <SENDER-RECEIVER-INTERFACE>
+      <SHORT-NAME name="CamFrameIF"/>
+      <DATA-ELEMENTS>
+        <VARIABLE-DATA-PROTOTYPE>
+          <SHORT-NAME name="FrameBytes"/>
+          <TYPE-TREF>
+            <Array-of-uint8 No_Of_Bytes="1024">
+              <Fixed-values-generated Default-Value="0"/>
+            </Array-of-uint8>
+          </TYPE-TREF>
+        </VARIABLE-DATA-PROTOTYPE>
+      </DATA-ELEMENTS>
+    </SENDER-RECEIVER-INTERFACE>
+
+    <!-- 2) Application SWC with runnable, data accesses & timing event -->
+    <APPLICATION-SW-COMPONENT-TYPE>
+      <SHORT-NAME name="CameraSWC"/>
+      <PORTS>
+        <P-PORT-PROTOTYPE>
+          <SHORT-NAME name="CamTx"/>
+          <PROVIDED-INTERFACE-TREF DEST="/CamFrameIF"/>
+        </P-PORT-PROTOTYPE>
+        <R-PORT-PROTOTYPE>
+          <SHORT-NAME name="CamRx"/>
+          <REQUIRED-INTERFACE-TREF DEST="/CamFrameIF"/>
+        </R-PORT-PROTOTYPE>
+      </PORTS>
+      <INTERNAL-BEHAVIORS>
+        <SWC-INTERNAL-BEHAVIOR>
+          <SHORT-NAME name="CameraBehav"/>
+          <RUNNABLES>
+            <RUNNABLE-ENTITY>
+              <SHORT-NAME name="ProcessFrame"/>
+              <!-- read then write (order matches schema group) -->
+              <DATA-READ-ACCESS>
+                <VARIABLE-ACCESS>
+                  <SHORT-NAME name="ReadFrame"/>
+                  <ACCESSED-VARIABLE>
+                    <AUTOSAR-VARIABLE-IREF>
+                      <PORT-PROTOTYPE-REF DEST="/SWCs/CameraSWC/Ports/CamRx"/>
+                      <TARGET-DATA-PROTOTYPE-REF DEST="/CamFrameIF/FrameBytes"/>
+                    </AUTOSAR-VARIABLE-IREF>
+                  </ACCESSED-VARIABLE>
+                </VARIABLE-ACCESS>
+              </DATA-READ-ACCESS>
+              <DATA-WRITE-ACCESS>
+                <VARIABLE-ACCESS>
+                  <SHORT-NAME name="WriteFrame"/>
+                  <ACCESSED-VARIABLE>
+                    <AUTOSAR-VARIABLE-IREF>
+                      <PORT-PROTOTYPE-REF DEST="/SWCs/CameraSWC/Ports/CamTx"/>
+                      <TARGET-DATA-PROTOTYPE-REF DEST="/CamFrameIF/FrameBytes"/>
+                    </AUTOSAR-VARIABLE-IREF>
+                  </ACCESSED-VARIABLE>
+                </VARIABLE-ACCESS>
+              </DATA-WRITE-ACCESS>
+            </RUNNABLE-ENTITY>
+          </RUNNABLES>
+          <EVENTS>
+            <TIMING-EVENT>
+              <SHORT-NAME name="CamTick10ms"/>
+              <START-ON-EVENT-REF DEST="/SWCs/CameraSWC/CameraBehav/ProcessFrame"/>
+              <PERIOD value="10" unit="ms"/>
+            </TIMING-EVENT>
+          </EVENTS>
+        </SWC-INTERNAL-BEHAVIOR>
+      </INTERNAL-BEHAVIORS>
+    </APPLICATION-SW-COMPONENT-TYPE>
+
+    <!-- 3) On-chip + chiplet topology with UCIe host↔endpoint and AXI/Ethernet -->
+    <ECUs>
+      <SHORT-NAME name="VehicleECU"/>
+      <SoCs>
+        <SHORT-NAME name="MainSoC"/>
+        <AXI-BUS width="8" frequency="200000000"/>
+        <ETHERNET-INTERFACE Mode="native"/>
+        <UCIe-INTERFACE Mode="host"/>
+
+        <!-- Primary CPU cluster (ARMv9 A720, 8 cores @ 800 MHz) -->
+        <CPU_Cluster>
+          <Operating-System>
+            <Linux Affine-tasks-byOS="true" Show_UART_Terminal="false">
+              <Ubuntu_File_System>Ubuntu22</Ubuntu_File_System>
+            </Linux>
+          </Operating-System>
+          <ARMV9-Family>
+            <AFM-CortexA720 CoresPerCluster="8">
+              <SHORT-NAME name="A720-Cluster-0"/>
+              <Frequency value="800000000"/>
+            </AFM-CortexA720>
+          </ARMV9-Family>
+        </CPU_Cluster>
+
+        <!-- Chiplet A (endpoint) that talks to Chiplet B via UCIe D2D -->
+        <Chiplet>
+          <SHORT-NAME name="chiplet-A"/>
+          <AXI-BUS width="4" frequency="150000000"/>
+          <ETHERNET-INTERFACE Mode="simulated"/>
+          <UCIe-INTERFACE Mode="endpoint">
+            <Endpoint_DMA_Configuration Frequency="250000000"/>
+            <D2D_Configuration DestChipletRef="/VehicleECU/MainSoC/chiplet-B">
+              <LINK_WIDTH value="128"/>
+              <LINK_FREQUENCY value="250000000"/>
+              <PROTOCOL_CONV_LATENCY value="6" unit="ns"/>
+              <CHIPLET_LINK_LATENCY value="2" unit="ns"/>
+              <LOGICAL_IF_DELAY value="6" unit="ns"/>
+              <PHYSICAL_IF_DELAY value="5" unit="ns"/>
+            </D2D_Configuration>
+          </UCIe-INTERFACE>
+
+          <!-- Optional local compute cluster on chiplet -->
+          <CPU_Cluster>
+            <Operating-System>
+              <Nucleus_RTOS Affine-tasks-byOS="false" Show_UART_Terminal="false"/>
+            </Operating-System>
+            <ARMV8-Family>
+              <CortexA53 CoresPerCluster="4">
+                <SHORT-NAME name="A53-Cluster-A"/>
+                <Frequency value="400000000"/>
+              </CortexA53>
+            </ARMV8-Family>
+          </CPU_Cluster>
+
+          <!-- Generic HW on chiplet A producing/consuming data -->
+          <Generic_Hardware>
+            <SHORT-NAME name="GenericHW1"/>
+            <Frequency value="100000000"/>
+            <AXI-Master-Port priority="64"/>
+            <MEMORY-INTERFACE InternalMemory="true"/>
+            <INTERNAL-BEHAVIOR>
+              <PORTS>
+                <P-PORT-PROTOTYPE>
+                  <SHORT-NAME name="GHW_P"/>
+                  <PROVIDED-INTERFACE-TREF DEST="/CamFrameIF"/>
+                </P-PORT-PROTOTYPE>
+                <R-PORT-PROTOTYPE>
+                  <SHORT-NAME name="GHW_R"/>
+                  <REQUIRED-INTERFACE-TREF DEST="/CamFrameIF"/>
+                </R-PORT-PROTOTYPE>
+              </PORTS>
+              <OPERATIONS-SEQUENCE>
+                <OPERATION>
+                  <READ>
+                    <IREF DEST="/GenericHW1/GHW_R"/>
+                  </READ>
+                </OPERATION>
+                <OPERATION>
+                  <LATENCY value="5" unit="us"/>
+                </OPERATION>
+                <OPERATION>
+                  <LOAD value="1000"/>
+                </OPERATION>
+                <OPERATION>
+                  <MAX-POOL kernelSize="3" stride="2" height="256" width="256" channels="3"/>
+                </OPERATION>
+                <OPERATION>
+                  <WRITE>
+                    <IREF DEST="/GenericHW1/GHW_P"/>
+                  </WRITE>
+                </OPERATION>
+              </OPERATIONS-SEQUENCE>
+              <EVENT>
+                <DATA-RECEIVED-EVENT>
+                  <REQUIRED-PORT-TREF DEST="/GenericHW1/GHW_R"/>
+                </DATA-RECEIVED-EVENT>
+              </EVENT>
+            </INTERNAL-BEHAVIOR>
+            <POWER-PARAMETERS Split_power_mw="12" Delay_power_mw="9" Sequential_power_mw="14"
+                              Static_Power_Leakage_mw="0.05" Clock_Tree_Power_mw="1"
+                              Power_Per_Nominal_Clock_Mhz="100"/>
+          </Generic_Hardware>
+        </Chiplet>
+
+        <!-- Chiplet B (endpoint) to complete the D2D path -->
+        <Chiplet>
+          <SHORT-NAME name="chiplet-B"/>
+          <AXI-BUS width="4" frequency="150000000"/>
+          <ETHERNET-INTERFACE Mode="simulated"/>
+          <UCIe-INTERFACE Mode="endpoint"/>
+        </Chiplet>
+
+      </SoCs>
+    </ECUs>
+
+    <!-- 4) Network topology (CAN + interface refs) -->
+    <Network-Topology>
+      <InterECU_communication>
+        <CAN-BUS CAN-FD="true">
+          <SHORT-NAME name="BodyCAN"/>
+          <BaudRate value="500000"/>
+          <INTERFACE-TREF DEST="/CamFrameIF"/>
+        </CAN-BUS>
+      </InterECU_communication>
+    </Network-Topology>
+
+    <!-- 5) HW–SW mapping: pin runnable to Cluster with core id, load & prio -->
+    <HW-SW-MAPPING ClusterRef="/VehicleECU/MainSoC/A720-Cluster-0">
+      <Core-Runnable-Mapping CoreId="0" RunnableRef="/CameraSWC/CameraBehav/ProcessFrame"
+                             Load="100000" Priority="50"/>
+    </HW-SW-MAPPING>
+
+    <!-- 6) Analysis: enable SW/HW on selected SoC -->
+    <Analysis>
+      <SW-Analysis-Enable>
+        <Selected-SoCs>
+          <SoC DEST="/VehicleECU/MainSoC"/>
+        </Selected-SoCs>
+      </SW-Analysis-Enable>
+      <HW-Analysis-Enable>
+        <Selected-SoCs>
+          <SoC DEST="/VehicleECU/MainSoC"/>
+        </Selected-SoCs>
+      </HW-Analysis-Enable>
+      <Network-Analysis-Enable>
+        <CAN-BUS-Monitor-Enable>true</CAN-BUS-Monitor-Enable>
+      </Network-Analysis-Enable>
+    </Analysis>
+
+  </ELEMENTS>
+</AR-PACKAGE>
