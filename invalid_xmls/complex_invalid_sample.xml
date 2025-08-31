@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<AR-PACKAGE>
+    <ELEMENTS>
+        <!-- Invalid Simulation-Time with wrong unit and non-numeric value -->
+        <Simulation-Time value="invalid_number" unit="hours"/>
+        
+        <!-- Interface with missing required elements -->
+        <SENDER-RECEIVER-INTERFACE>
+            <!-- Missing SHORT-NAME element -->
+            <DATA-ELEMENTS>
+                <VARIABLE-DATA-PROTOTYPE>
+                    <!-- Missing SHORT-NAME element -->
+                    <TYPE-TREF>
+                        <Array-of-uint8 No_Of_Bytes="999999999999">
+                            <!-- Invalid: min > max -->
+                            <Random-Values-generated>
+                                <Data-Range min="200" max="100"/>
+                            </Random-Values-generated>
+                        </Array-of-uint8>
+                    </TYPE-TREF>
+                </VARIABLE-DATA-PROTOTYPE>
+            </DATA-ELEMENTS>
+        </SENDER-RECEIVER-INTERFACE>
+        
+        <!-- Software component with invalid structure -->
+        <APPLICATION-SW-COMPONENT-TYPE>
+            <SHORT-NAME name="InvalidSWC"/>
+            <!-- Missing INTERNAL-BEHAVIORS which is required -->
+            <PORTS>
+                <R-PORT-PROTOTYPE>
+                    <!-- Missing SHORT-NAME -->
+                    <REQUIRED-INTERFACE-TREF DEST=""/>
+                </R-PORT-PROTOTYPE>
+            </PORTS>
+        </APPLICATION-SW-COMPONENT-TYPE>
+        
+        <!-- Custom behavior with invalid operations -->
+        <SWC-CUSTOM-BEHAVIOR>
+            <SHORT-NAME name="BrokenBehavior"/>
+            <OPERATIONS-SEQUENCE>
+                <OPERATION>
+                    <!-- Invalid: missing required value attribute -->
+                    <LOAD/>
+                </OPERATION>
+                <OPERATION>
+                    <!-- Invalid: missing required attributes -->
+                    <CUSTOM-OPERATION/>
+                </OPERATION>
+                <OPERATION>
+                    <!-- Invalid: kernel size too large -->
+                    <CONVOLUTION height="1024" width="1024" channels="3" kernelSize="999"/>
+                </OPERATION>
+            </OPERATIONS-SEQUENCE>
+        </SWC-CUSTOM-BEHAVIOR>
+        
+        <!-- Pre-built application with empty reference -->
+        <PRE-BUILT-APPLICATION>
+            <SHORT-NAME name="BrokenApp"/>
+            <PATH DEST=""/>
+        </PRE-BUILT-APPLICATION>
+        
+        <!-- Network topology with invalid configurations -->
+        <Network-Topology>
+            <InterECU_communication>
+                <CAN-BUS CAN-FD="maybe">
+                    <SHORT-NAME name="BrokenCAN"/>
+                    <!-- Invalid baudrate - negative number -->
+                    <BaudRate value="-500000"/>
+                    <!-- Missing INTERFACE-TREF which is required -->
+                </CAN-BUS>
+                <Eth-Switch>
+                    <!-- Missing SHORT-NAME -->
+                    <!-- Missing INTERFACE-TREF which is required -->
+                </Eth-Switch>
+            </InterECU_communication>
+        </Network-Topology>
+        
+        <!-- ECUs with multiple validation errors -->
+        <ECUs>
+            <!-- Missing SHORT-NAME attribute value -->
+            <SHORT-NAME name=""/>
+            <SoCs>
+                <SHORT-NAME name="BrokenSoC"/>
+                <!-- Invalid AXI-BUS configuration -->
+                <AXI-BUS width="0" frequency="999"/>
+                <ETHERNET-INTERFACE Mode="invalid_mode"/>
+                <!-- Missing required Mode attribute -->
+                <UCIe-INTERFACE>
+                    <Endpoint_DMA_Configuration Frequency="0"/>
+                    <D2D_Configuration DestChipletRef="">
+                        <!-- Invalid values -->
+                        <LINK_WIDTH value="0"/>
+                        <LINK_FREQUENCY value="0"/>
+                        <PROTOCOL_CONV_LATENCY value="0" unit="invalid_unit"/>
+                        <CHIPLET_LINK_LATENCY value="-5" unit="ns"/>
+                        <LOGICAL_IF_DELAY value="abc" unit="ns"/>
+                        <PHYSICAL_IF_DELAY value="999999999999999999" unit="invalid"/>
+                    </D2D_Configuration>
+                </UCIe-INTERFACE>
+                
+                <!-- Chiplet with wrong element order and invalid values -->
+                <Chiplet>
+                    <SHORT-NAME name="BrokenChiplet"/>
+                    <!-- Wrong order - should be AXI-BUS first -->
+                    <CPU_Cluster>
+                        <Operating-System>
+                            <!-- Invalid: Both Nucleus and Linux specified -->
+                            <Nucleus_RTOS Affine-tasks-byOS="invalid_boolean"/>
+                            <Linux>
+                                <!-- Invalid: Both file systems specified -->
+                                <Buildroot_File_System>buildroot-invalid</Buildroot_File_System>
+                                <Ubuntu_File_System>ubuntu-invalid</Ubuntu_File_System>
+                            </Linux>
+                        </Operating-System>
+                        <ARMV7-Family>
+                            <!-- Invalid: CortexM7 with too many cores -->
+                            <CortexM7 CoresPerCluster="16">
+                                <SHORT-NAME name="InvalidCortexM7"/>
+                                <!-- Frequency too high for this processor -->
+                                <Frequency value="5000000000"/>
+                            </CortexM7>
+                        </ARMV7-Family>
+                    </CPU_Cluster>
+                    <AXI-BUS width="-10" frequency="abc"/>
+                    <ETHERNET-INTERFACE Mode="nonexistent"/>
+                    <!-- Missing required Mode attribute -->
+                    <UCIe-INTERFACE/>
+                </Chiplet>
+                
+                <!-- CPU_Cluster with invalid configurations -->
+                <CPU_Cluster>
+                    <Operating-System>
+                        <Linux Show_UART_Terminal="not_boolean">
+                            <!-- Missing file system choice -->
+                        </Linux>
+                    </Operating-System>
+                    <ARMV8-Family>
+                        <!-- Invalid: CortexR52 with too many cores -->
+                        <CortexR52 CoresPerCluster="16">
+                            <SHORT-NAME name="InvalidCortexR52"/>
+                            <!-- Invalid frequency range -->
+                            <Frequency value="500"/>
+                        </CortexR52>
+                    </ARMV8-Family>
+                </CPU_Cluster>
+                
+                <!-- Generic Hardware with multiple errors -->
+                <Generic_Hardware>
+                    <!-- Missing SHORT-NAME -->
+                    <!-- Invalid frequency - too low -->
+                    <Frequency value="100"/>
+                    <!-- Missing priority attribute -->
+                    <AXI-Master-Port/>
+                    <MEMORY-INTERFACE InternalMemory="not_boolean"/>
+                    <INTERNAL-BEHAVIOR>
+                        <PORTS>
+                            <!-- Invalid: Both P-PORT and R-PORT missing required elements -->
+                            <P-PORT-PROTOTYPE>
+                                <!-- Missing SHORT-NAME and PROVIDED-INTERFACE-TREF -->
+                            </P-PORT-PROTOTYPE>
+                            <R-PORT-PROTOTYPE>
+                                <SHORT-NAME name="InvalidRPort"/>
+                                <!-- Empty DEST attribute -->
+                                <REQUIRED-INTERFACE-TREF DEST=""/>
+                            </R-PORT-PROTOTYPE>
+                        </PORTS>
+                        <OPERATIONS-SEQUENCE>
+                            <OPERATION>
+                                <!-- Invalid: Multiple operation types in one OPERATION -->
+                                <READ>
+                                    <IREF DEST=""/>
+                                </READ>
+                                <WRITE>
+                                    <IREF DEST=""/>
+                                </WRITE>
+                            </OPERATION>
+                        </OPERATIONS-SEQUENCE>
+                        <!-- Missing EVENT which is required -->
+                    </INTERNAL-BEHAVIOR>
+                    <!-- Invalid power parameters -->
+                    <POWER-PARAMETERS Split_power_mw="-10" Delay_power_mw="abc" 
+                                      Power_Per_Nominal_Clock_Mhz="0"/>
+                </Generic_Hardware>
+            </SoCs>
+        </ECUs>
+        
+        <!-- Invalid HW-SW-MAPPING configurations -->
+        <HW-SW-MAPPING ClusterRef="">
+            <!-- Invalid CoreId - out of range -->
+            <Core-Runnable-Mapping CoreId="99" RunnableRef="" Load="-1000" Priority="0"/>
+        </HW-SW-MAPPING>
+        
+        <HW-SW-MAPPING ClusterRef="/nonexistent/cluster">
+            <!-- Invalid CoreId and Priority -->
+            <Core-PrebuiltApplication-Mapping CoreId="255" PrebuiltApplicationRef=""/>
+        </HW-SW-MAPPING>
+        
+        <!-- Analysis with invalid configurations -->
+        <Analysis>
+            <SW-Analysis-Enable>
+                <!-- Invalid: Both ALL-SoCs and Selected-SoCs specified -->
+                <ALL-SoCs>enabled</ALL-SoCs>
+                <Selected-SoCs>
+                    <SoC DEST=""/>
+                </Selected-SoCs>
+            </SW-Analysis-Enable>
+            <HW-Analysis-Enable>
+                <Selected-SoCs>
+                    <!-- Missing SoC elements -->
+                </Selected-SoCs>
+            </HW-Analysis-Enable>
+            <Network-Analysis-Enable>
+                <!-- Invalid: Missing required elements -->
+            </Network-Analysis-Enable>
+        </Analysis>
+    </ELEMENTS>
+</AR-PACKAGE>
