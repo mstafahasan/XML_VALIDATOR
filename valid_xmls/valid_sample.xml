@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<AR-PACKAGE>
+    <ELEMENTS>
+        <Simulation-Time value="1000" unit="ms"/>
+        <ECUs>
+            <SHORT-NAME name="TestECU"/>
+            <SoCs>
+                <SHORT-NAME name="TestSoC"/>
+                <AXI-BUS width="64" frequency="100000000"/>
+                <ETHERNET-INTERFACE Mode="simulated"/>
+                <UCIe-INTERFACE Mode="host"/>
+            </SoCs>
+        </ECUs>
+    </ELEMENTS>
+</AR-PACKAGE>

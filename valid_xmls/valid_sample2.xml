@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<AR-PACKAGE>
+    <ELEMENTS>
+        <Simulation-Time value="5000" unit="ms"/>
+        <ECUs>
+            <SHORT-NAME name="MainECU"/>
+            <SoCs>
+                <SHORT-NAME name="MainSoC"/>
+                <AXI-BUS width="32" frequency="200000000"/>
+                <ETHERNET-INTERFACE Mode="native"/>
+                <UCIe-INTERFACE Mode="endpoint"/>
+            </SoCs>
+        </ECUs>
+    </ELEMENTS>
+    <ELEMENTS>
+        <Simulation-Time value="10" unit="s"/>
+        <ECUs>
+            <SHORT-NAME name="SecondaryECU"/>
+            <SoCs>
+                <SHORT-NAME name="SecondarySoC"/>
+                <AXI-BUS width="128" frequency="300000000"/>
+                <ETHERNET-INTERFACE Mode="simulated"/>
+                <UCIe-INTERFACE Mode="host"/>
+            </SoCs>
+        </ECUs>
+    </ELEMENTS>
+</AR-PACKAGE>

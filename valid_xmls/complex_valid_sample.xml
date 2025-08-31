@@ -1,0 +1,293 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<AR-PACKAGE>
+    <ELEMENTS>
+        <!-- Simulation timing configuration -->
+        <Simulation-Time value="5000" unit="ms"/>
+        
+        <!-- Interface definitions -->
+        <SENDER-RECEIVER-INTERFACE>
+            <SHORT-NAME name="SensorInterface"/>
+            <DATA-ELEMENTS>
+                <VARIABLE-DATA-PROTOTYPE>
+                    <SHORT-NAME name="SensorData"/>
+                    <TYPE-TREF>
+                        <Array-of-uint8 No_Of_Bytes="1024">
+                            <Random-Values-generated>
+                                <Data-Range min="0" max="255"/>
+                            </Random-Values-generated>
+                        </Array-of-uint8>
+                    </TYPE-TREF>
+                </VARIABLE-DATA-PROTOTYPE>
+                <VARIABLE-DATA-PROTOTYPE>
+                    <SHORT-NAME name="ProcessedData"/>
+                    <TYPE-TREF>
+                        <Array-of-float No_Of_Elements="512">
+                            <Fixed-values-generated Default-Value="1.5"/>
+                        </Array-of-float>
+                    </TYPE-TREF>
+                </VARIABLE-DATA-PROTOTYPE>
+            </DATA-ELEMENTS>
+        </SENDER-RECEIVER-INTERFACE>
+        
+        <SENDER-RECEIVER-INTERFACE>
+            <SHORT-NAME name="ActuatorInterface"/>
+            <DATA-ELEMENTS>
+                <VARIABLE-DATA-PROTOTYPE>
+                    <SHORT-NAME name="ControlSignal"/>
+                    <TYPE-TREF>
+                        <Array-of-uint8 No_Of_Bytes="256">
+                            <Fixed-values-generated Default-Value="128"/>
+                        </Array-of-uint8>
+                    </TYPE-TREF>
+                </VARIABLE-DATA-PROTOTYPE>
+            </DATA-ELEMENTS>
+        </SENDER-RECEIVER-INTERFACE>
+        
+        <!-- Software component definitions -->
+        <APPLICATION-SW-COMPONENT-TYPE>
+            <SHORT-NAME name="SensorProcessingSWC"/>
+            <PORTS>
+                <R-PORT-PROTOTYPE>
+                    <SHORT-NAME name="SensorInput"/>
+                    <REQUIRED-INTERFACE-TREF DEST="/SensorInterface"/>
+                </R-PORT-PROTOTYPE>
+                <P-PORT-PROTOTYPE>
+                    <SHORT-NAME name="ProcessedOutput"/>
+                    <PROVIDED-INTERFACE-TREF DEST="/ActuatorInterface"/>
+                </P-PORT-PROTOTYPE>
+            </PORTS>
+            <INTERNAL-BEHAVIORS>
+                <SWC-INTERNAL-BEHAVIOR>
+                    <SHORT-NAME name="SensorProcessingBehavior"/>
+                    <RUNNABLES>
+                        <RUNNABLE-ENTITY>
+                            <SHORT-NAME name="ProcessSensorData"/>
+                            <DATA-READ-ACCESS>
+                                <VARIABLE-ACCESS>
+                                    <SHORT-NAME name="ReadSensorData"/>
+                                    <ACCESSED-VARIABLE>
+                                        <AUTOSAR-VARIABLE-IREF>
+                                            <PORT-PROTOTYPE-REF DEST="/SensorProcessingSWC/SensorInput"/>
+                                            <TARGET-DATA-PROTOTYPE-REF DEST="/SensorInterface/SensorData"/>
+                                        </AUTOSAR-VARIABLE-IREF>
+                                    </ACCESSED-VARIABLE>
+                                </VARIABLE-ACCESS>
+                            </DATA-READ-ACCESS>
+                            <DATA-WRITE-ACCESS>
+                                <VARIABLE-ACCESS>
+                                    <SHORT-NAME name="WriteProcessedData"/>
+                                    <ACCESSED-VARIABLE>
+                                        <AUTOSAR-VARIABLE-IREF>
+                                            <PORT-PROTOTYPE-REF DEST="/SensorProcessingSWC/ProcessedOutput"/>
+                                            <TARGET-DATA-PROTOTYPE-REF DEST="/ActuatorInterface/ControlSignal"/>
+                                        </AUTOSAR-VARIABLE-IREF>
+                                    </ACCESSED-VARIABLE>
+                                </VARIABLE-ACCESS>
+                            </DATA-WRITE-ACCESS>
+                        </RUNNABLE-ENTITY>
+                    </RUNNABLES>
+                    <EVENTS>
+                        <TIMING-EVENT>
+                            <SHORT-NAME name="PeriodicProcessing"/>
+                            <START-ON-EVENT-REF DEST="/SensorProcessingSWC/SensorProcessingBehavior/ProcessSensorData"/>
+                            <PERIOD value="100" unit="ms"/>
+                        </TIMING-EVENT>
+                        <DATA-RECEIVED-EVENT>
+                            <SHORT-NAME name="SensorDataReceived"/>
+                            <START-ON-EVENT-REF DEST="/SensorProcessingSWC/SensorProcessingBehavior/ProcessSensorData"/>
+                            <DATA-IREF>
+                                <TARGET-DATA-ELEMENT-REF DEST="/SensorProcessingSWC/SensorProcessingBehavior/ProcessSensorData/SensorData"/>
+                            </DATA-IREF>
+                        </DATA-RECEIVED-EVENT>
+                    </EVENTS>
+                </SWC-INTERNAL-BEHAVIOR>
+            </INTERNAL-BEHAVIORS>
+        </APPLICATION-SW-COMPONENT-TYPE>
+        
+        <!-- Custom behavior definition -->
+        <SWC-CUSTOM-BEHAVIOR>
+            <SHORT-NAME name="OptimizedProcessing"/>
+            <OPERATIONS-SEQUENCE>
+                <OPERATION>
+                    <READ>
+                        <IREF DEST="/SensorProcessingSWC/SensorProcessingBehavior/ProcessSensorData/ReadSensorData"/>
+                    </READ>
+                </OPERATION>
+                <OPERATION>
+                    <LOAD value="1000"/>
+                </OPERATION>
+                <OPERATION>
+                    <CONVOLUTION height="32" width="32" channels="3" kernelSize="5"/>
+                </OPERATION>
+                <OPERATION>
+                    <MAX-POOL height="32" width="32" channels="3" kernelSize="2" stride="2"/>
+                </OPERATION>
+                <OPERATION>
+                    <BATCH-NORMALIZATION height="16" width="16" channels="3"/>
+                </OPERATION>
+                <OPERATION>
+                    <WRITE>
+                        <IREF DEST="/SensorProcessingSWC/SensorProcessingBehavior/ProcessSensorData/WriteProcessedData"/>
+                    </WRITE>
+                </OPERATION>
+            </OPERATIONS-SEQUENCE>
+        </SWC-CUSTOM-BEHAVIOR>
+        
+        <!-- Pre-built application -->
+        <PRE-BUILT-APPLICATION>
+            <SHORT-NAME name="VisionProcessingApp"/>
+            <PATH DEST="/applications/vision_processing.elf"/>
+        </PRE-BUILT-APPLICATION>
+        
+        <!-- Network topology -->
+        <Network-Topology>
+            <InterECU_communication>
+                <CAN-BUS CAN-FD="true">
+                    <SHORT-NAME name="HighSpeedCAN"/>
+                    <BaudRate value="1000000"/>
+                    <INTERFACE-TREF DEST="/SensorInterface"/>
+                    <INTERFACE-TREF DEST="/ActuatorInterface"/>
+                </CAN-BUS>
+                <Eth-Switch>
+                    <SHORT-NAME name="MainEthSwitch"/>
+                    <INTERFACE-TREF DEST="/SensorInterface"/>
+                </Eth-Switch>
+            </InterECU_communication>
+        </Network-Topology>
+        
+        <!-- Hardware definition -->
+        <ECUs>
+            <SHORT-NAME name="MainProcessingECU"/>
+            <SoCs>
+                <SHORT-NAME name="HighPerformanceSoC"/>
+                <AXI-BUS width="128" frequency="400000000"/>
+                <ETHERNET-INTERFACE Mode="native"/>
+                <UCIe-INTERFACE Mode="host">
+                    <Endpoint_DMA_Configuration Frequency="500000000"/>
+                    <D2D_Configuration DestChipletRef="/MainProcessingECU/HighPerformanceSoC/VisionChiplet">
+                        <LINK_WIDTH value="512"/>
+                        <LINK_FREQUENCY value="500000000"/>
+                        <PROTOCOL_CONV_LATENCY value="8" unit="ns"/>
+                        <CHIPLET_LINK_LATENCY value="3" unit="ns"/>
+                        <LOGICAL_IF_DELAY value="7" unit="ns"/>
+                        <PHYSICAL_IF_DELAY value="4" unit="ns"/>
+                    </D2D_Configuration>
+                </UCIe-INTERFACE>
+                
+                <!-- Chiplet with additional processing -->
+                <Chiplet>
+                    <SHORT-NAME name="VisionChiplet"/>
+                    <AXI-BUS width="64" frequency="300000000"/>
+                    <ETHERNET-INTERFACE Mode="simulated"/>
+                    <UCIe-INTERFACE Mode="endpoint"/>
+                    <CPU_Cluster>
+                        <Operating-System>
+                            <Linux Affine-tasks-byOS="false" Show_UART_Terminal="false">
+                                <Ubuntu_File_System>ubuntu-22.04-arm64</Ubuntu_File_System>
+                            </Linux>
+                        </Operating-System>
+                        <ARMV8-Family>
+                            <CortexA72 CoresPerCluster="4">
+                                <SHORT-NAME name="VisionCPUCluster"/>
+                                <Frequency value="800000000"/>
+                            </CortexA72>
+                        </ARMV8-Family>
+                    </CPU_Cluster>
+                </Chiplet>
+                
+                <!-- CPU Cluster with operating system -->
+                <CPU_Cluster>
+                    <Operating-System>
+                        <Nucleus_RTOS Affine-tasks-byOS="true" Show_UART_Terminal="true"/>
+                    </Operating-System>
+                    <ARMV9-Family>
+                        <AFM-CortexA720 CoresPerCluster="8">
+                            <SHORT-NAME name="MainCPUCluster"/>
+                            <Frequency value="1000000000"/>
+                        </AFM-CortexA720>
+                    </ARMV9-Family>
+                </CPU_Cluster>
+                
+                <!-- Generic Hardware for AI processing -->
+                <Generic_Hardware>
+                    <SHORT-NAME name="AIAccelerator"/>
+                    <Frequency value="1000000000"/>
+                    <AXI-Master-Port priority="1"/>
+                    <MEMORY-INTERFACE InternalMemory="true"/>
+                    <INTERNAL-BEHAVIOR>
+                        <PORTS>
+                            <R-PORT-PROTOTYPE>
+                                <SHORT-NAME name="ImageInput"/>
+                                <REQUIRED-INTERFACE-TREF DEST="/SensorInterface"/>
+                            </R-PORT-PROTOTYPE>
+                            <P-PORT-PROTOTYPE>
+                                <SHORT-NAME name="ProcessedOutput"/>
+                                <PROVIDED-INTERFACE-TREF DEST="/ActuatorInterface"/>
+                            </P-PORT-PROTOTYPE>
+                        </PORTS>
+                        <OPERATIONS-SEQUENCE>
+                            <OPERATION>
+                                <READ>
+                                    <IREF DEST="/AIAccelerator/ImageInput"/>
+                                </READ>
+                            </OPERATION>
+                            <OPERATION>
+                                <LATENCY value="50" unit="us"/>
+                            </OPERATION>
+                            <OPERATION>
+                                <CONVOLUTION height="224" width="224" channels="3" kernelSize="7"/>
+                            </OPERATION>
+                            <OPERATION>
+                                <MAX-POOL height="224" width="224" channels="64" kernelSize="3" stride="2"/>
+                            </OPERATION>
+                            <OPERATION>
+                                <WRITE>
+                                    <IREF DEST="/AIAccelerator/ProcessedOutput"/>
+                                </WRITE>
+                            </OPERATION>
+                        </OPERATIONS-SEQUENCE>
+                        <EVENT>
+                            <TIMING-EVENT>
+                                <PERIOD value="33" unit="ms"/>
+                            </TIMING-EVENT>
+                        </EVENT>
+                    </INTERNAL-BEHAVIOR>
+                    <POWER-PARAMETERS Split_power_mw="15" Delay_power_mw="12" Sequential_power_mw="18" 
+                                      Static_Power_Leakage_mw="0.1" Clock_Tree_Power_mw="2" Power_Per_Nominal_Clock_Mhz="150"/>
+                </Generic_Hardware>
+            </SoCs>
+        </ECUs>
+        
+        <!-- Hardware-Software mapping for runnables -->
+        <HW-SW-MAPPING ClusterRef="/MainProcessingECU/HighPerformanceSoC/MainCPUCluster">
+            <Core-Runnable-Mapping CoreId="0" RunnableRef="/SensorProcessingSWC/SensorProcessingBehavior/ProcessSensorData" 
+                                   Load="5000" Priority="10"/>
+        </HW-SW-MAPPING>
+        
+        <!-- Hardware-Software mapping for pre-built applications -->
+        <HW-SW-MAPPING ClusterRef="/MainProcessingECU/HighPerformanceSoC/VisionChiplet/VisionCPUCluster">
+            <Core-PrebuiltApplication-Mapping CoreId="1" PrebuiltApplicationRef="/VisionProcessingApp"/>
+        </HW-SW-MAPPING>
+        
+        <!-- Analysis configuration -->
+        <Analysis>
+            <SW-Analysis-Enable>
+                <Selected-SoCs>
+                    <SoC DEST="/MainProcessingECU/HighPerformanceSoC"/>
+                </Selected-SoCs>
+            </SW-Analysis-Enable>
+            <HW-Analysis-Enable>
+                <ALL-SoCs>enabled</ALL-SoCs>
+            </HW-Analysis-Enable>
+            <Power-Analysis-Enable>
+                <Selected-SoCs>
+                    <SoC DEST="/MainProcessingECU/HighPerformanceSoC"/>
+                </Selected-SoCs>
+            </Power-Analysis-Enable>
+            <Network-Analysis-Enable>
+                <CAN-BUS-Monitor-Enable>enabled</CAN-BUS-Monitor-Enable>
+                <ETH-Switch-Monitor-Enable>enabled</ETH-Switch-Monitor-Enable>
+            </Network-Analysis-Enable>
+        </Analysis>
+    </ELEMENTS>
+</AR-PACKAGE>
