@@ -1,0 +1,30 @@
+[
+  {
+    "id": 1,
+    "name": "ahmed mohamed",
+    "email": "mostafahassan3001@gmail.com",
+    "subject": "hhhhhh",
+    "message": "aslkdlfjl;skajdf;lkj",
+    "timestamp": "2025-08-30T18:12:58.273341",
+    "status": "new",
+    "category": "general",
+    "priority": "normal",
+    "admin_notes": "",
+    "replied_at": null,
+    "replied_by": null
+  },
+  {
+    "id": 2,
+    "name": "aaaaaaaaaaaaaaaaaa",
+    "email": "aaaaaaaa@gmail.com",
+    "subject": "sdffsdf",
+    "message": "asdfasldkfj;lsakjdf;l",
+    "timestamp": "2025-08-30T22:07:17.672748",
+    "status": "new",
+    "category": "general",
+    "priority": "normal",
+    "admin_notes": "",
+    "replied_at": null,
+    "replied_by": null
+  }
+]

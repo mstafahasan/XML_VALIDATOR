@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<AE_Data>
+    <Header>
+        <Project_Name>Test Project</Project_Name>
+        <Version>1.0</Version>
+        <Date>2024-01-15</Date>
+    </Header>
+    
+    <Components>
+        <Component>
+            <Name>Resistor</Name>
+            <Value>100</Value>
+            <Unit>Ohm</Unit>
+            <Tolerance>5%</Tolerance>
+            <Package>0603</Package>
+        </Component>
+        
+        <Component>
+            <Name>Capacitor</Name>
+            <Value>10</Value>
+            <Unit>uF</Unit>
+            <Tolerance>10%</Tolerance>
+            <Package>0805</Package>
+        </Component>
+        
+        <Component>
+            <Name>Inductor</Name>
+            <Value>1.5</Value>
+            <Unit>mH</Unit>
+            <Tolerance>20%</Tolerance>
+            <Package>1206</Package>
+        </Component>
+        
+        <Component>
+            <Name>LED</Name>
+            <Value>Red</Value>
+            <Unit>Color</Unit>
+            <Tolerance>N/A</Tolerance>
+            <Package>0603</Package>
+        </Component>
+        
+        <Component>
+            <Name>Transistor</Name>
+            <Value>2N2222</Value>
+            <Unit>Type</Unit>
+            <Tolerance>N/A</Tolerance>
+            <Package>TO-92</Package>
+        </Component>
+    </Components>
+    
+    <Connections>
+        <Connection>
+            <From>R1</From>
+            <To>C1</To>
+            <Type>Series</Type>
+        </Connection>
+        
+        <Connection>
+            <From>L1</From>
+            <To>LED1</To>
+            <Type>Parallel</Type>
+        </Connection>
+        
+        <Connection>
+            <From>Q1</From>
+            <To>R2</To>
+            <Type>Series</Type>
+        </Connection>
+    </Connections>
+    
+    <Notes>
+        <Note>This is a test circuit for validation</Note>
+        <Note>All components are standard values</Note>
+        <Note>Circuit operates at 5V DC</Note>
+    </Notes>
+</AE_Data>
