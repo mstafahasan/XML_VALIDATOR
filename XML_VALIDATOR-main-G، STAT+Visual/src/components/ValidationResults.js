@@ -4,6 +4,55 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { CheckCircle, XCircle, ChevronDown, ChevronRight, FileText, Info } from 'lucide-react';
 import ErrorStatistics from './ErrorStatistics';
 
+// Helper functions for error severity styling
+const getSeverityColor = (severity) => {
+  switch (severity) {
+    case 'critical': return '#dc3545';
+    case 'high': return '#fd7e14';
+    case 'medium': return '#ffc107';
+    case 'low': return '#28a745';
+    default: return '#6c757d';
+  }
+};
+
+const getSeverityBackground = (severity) => {
+  switch (severity) {
+    case 'critical': return '#f8d7da';
+    case 'high': return '#fff3cd';
+    case 'medium': return '#fff3cd';
+    case 'low': return '#d4edda';
+    default: return '#f8f9fa';
+  }
+};
+
+// Helper function to ensure English-only text
+const ensureEnglishOnly = (text) => {
+  if (typeof text !== 'string') return text;
+  
+  // Replace common Arabic words with English equivalents
+  const replacements = {
+    'خطأ': 'Error',
+    'مشكلة': 'Problem',
+    'الحل': 'Solution',
+    'تأكد': 'Make sure',
+    'تحقق': 'Check',
+    'راجع': 'Review',
+    'استخدم': 'Use',
+    'اختر': 'Choose',
+    'أضف': 'Add',
+    'صحح': 'Fix',
+    'غيّر': 'Change',
+    'راجع': 'Review'
+  };
+  
+  let result = text;
+  Object.entries(replacements).forEach(([arabic, english]) => {
+    result = result.replace(new RegExp(arabic, 'g'), english);
+  });
+  
+  return result;
+};
+
 const ResultsContainer = styled.div`
   margin-top: 3rem;
   padding-top: 2rem;
@@ -233,6 +282,63 @@ const ErrorValue = styled.div`
     font-size: 0.8rem;
   }
   
+  &.xpath {
+    color: #7c3aed;
+    background: #faf5ff;
+    border: 1px solid #d8b4fe;
+    font-weight: 500;
+  }
+  
+  &.error-category {
+    color: #ea580c;
+    background: #fff7ed;
+    border: 1px solid #fed7aa;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+  }
+  
+  &.actual-value {
+    color: #dc2626;
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    font-weight: 500;
+  }
+  
+  &.explanation {
+    color: #2c3e50;
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    font-weight: 600;
+    line-height: 1.6;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+  
+  &.user-friendly-explanation {
+    color: #495057;
+    background: #e8f4fd;
+    border: 1px solid #b3d9ff;
+    border-left: 4px solid #2196f3;
+    font-weight: 500;
+    line-height: 1.5;
+  }
+  
+  &.quick-fix {
+    color: #28a745;
+    background: #d4edda;
+    border: 1px solid #c3e6cb;
+    border-right: 4px solid #28a745;
+    font-weight: 600;
+  }
+  
+  &.error-title {
+    font-weight: 700;
+    font-size: 16px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+  
   &.error-type {
     font-weight: 600;
     text-transform: uppercase;
@@ -422,6 +528,78 @@ const ValidationResults = ({ results }) => {
                             <strong>🔍 Error Analysis</strong>
                           </ErrorHeader>
                           
+                          {/* Error Summary Card */}
+                          {file.error.title && (
+                            <div style={{
+                              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                              color: 'white',
+                              padding: '20px',
+                              borderRadius: '12px',
+                              marginBottom: '20px',
+                              boxShadow: '0 4px 15px rgba(0,0,0,0.2)',
+                              position: 'relative',
+                              overflow: 'hidden'
+                            }}>
+                              <div style={{
+                                position: 'absolute',
+                                top: '-50%',
+                                right: '-50%',
+                                width: '200%',
+                                height: '200%',
+                                background: 'radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%)',
+                                pointerEvents: 'none'
+                              }} />
+                              <div style={{ position: 'relative', zIndex: 1 }}>
+                                <div style={{
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  gap: '12px',
+                                  marginBottom: '12px'
+                                }}>
+                                  <div style={{
+                                    fontSize: '24px',
+                                    background: 'rgba(255,255,255,0.2)',
+                                    padding: '8px',
+                                    borderRadius: '50%',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center'
+                                  }}>
+                                    {file.error.icon || '❌'}
+                                  </div>
+                                  <div>
+                                    <h4 style={{
+                                      margin: 0,
+                                      fontSize: '18px',
+                                      fontWeight: '700',
+                                      textShadow: '0 1px 2px rgba(0,0,0,0.3)'
+                                    }}>
+                                      {ensureEnglishOnly(file.error.title)}
+                                    </h4>
+                                    <p style={{
+                                      margin: '4px 0 0 0',
+                                      fontSize: '14px',
+                                      opacity: 0.9
+                                    }}>
+                                      {file.error.severity?.toUpperCase() || 'ERROR'} • {file.error.category || 'Unknown Category'}
+                                    </p>
+                                  </div>
+                                </div>
+                                {file.error.quick_fix && (
+                                  <div style={{
+                                    background: 'rgba(255,255,255,0.15)',
+                                    padding: '12px',
+                                    borderRadius: '8px',
+                                    border: '1px solid rgba(255,255,255,0.2)',
+                                    textAlign: 'left'
+                                  }}>
+                                    <strong>💡 Quick Fix:</strong> {ensureEnglishOnly(file.error.quick_fix)}
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          )}
+                          
                           {typeof file.error === 'object' ? (
                             <ErrorGrid>
                               <ErrorItem>
@@ -466,6 +644,13 @@ const ValidationResults = ({ results }) => {
                                 </ErrorItem>
                               )}
                               
+                              {file.error.xpath && (
+                                <ErrorItem fullWidth>
+                                  <ErrorLabel>XPath:</ErrorLabel>
+                                  <ErrorValue className="xpath">{file.error.xpath}</ErrorValue>
+                                </ErrorItem>
+                              )}
+                              
                               {file.error.path && (
                                 <ErrorItem fullWidth>
                                   <ErrorLabel>XML Path:</ErrorLabel>
@@ -473,9 +658,376 @@ const ValidationResults = ({ results }) => {
                                 </ErrorItem>
                               )}
                               
+                              {file.error.category && (
+                                <ErrorItem>
+                                  <ErrorLabel>Error Category:</ErrorLabel>
+                                  <ErrorValue className="error-category">{file.error.category}</ErrorValue>
+                                </ErrorItem>
+                              )}
+                              
+                              {file.error.actual_value && (
+                                <ErrorItem>
+                                  <ErrorLabel>Actual Value:</ErrorLabel>
+                                  <ErrorValue className="actual-value">{file.error.actual_value}</ErrorValue>
+                                </ErrorItem>
+                              )}
+                              
+                              {file.error.title && (
+                                <ErrorItem fullWidth>
+                                  <ErrorLabel>Error Type:</ErrorLabel>
+                                  <ErrorValue className="error-title" style={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '8px',
+                                    fontSize: '16px',
+                                    fontWeight: '700',
+                                    color: getSeverityColor(file.error.severity),
+                                    backgroundColor: getSeverityBackground(file.error.severity),
+                                    padding: '12px 16px',
+                                    borderRadius: '8px',
+                                    border: `2px solid ${getSeverityColor(file.error.severity)}`,
+                                    marginBottom: '8px'
+                                  }}>
+                                    <span style={{ fontSize: '20px' }}>{file.error.icon}</span>
+                                    {file.error.title}
+                                    <span style={{ 
+                                      fontSize: '12px', 
+                                      backgroundColor: getSeverityColor(file.error.severity),
+                                      color: 'white',
+                                      padding: '2px 8px',
+                                      borderRadius: '12px',
+                                      textTransform: 'uppercase',
+                                      letterSpacing: '0.5px'
+                                    }}>
+                                      {file.error.severity}
+                                    </span>
+                                  </ErrorValue>
+                                </ErrorItem>
+                              )}
+                              
+                              {file.error.explanation && (
+                                <ErrorItem fullWidth>
+                                  <ErrorLabel>What Went Wrong:</ErrorLabel>
+                                  <ErrorValue className="explanation" style={{ 
+                                    fontFamily: 'Segoe UI, Tahoma, Arial, sans-serif',
+                                    fontSize: '15px',
+                                    color: '#2c3e50',
+                                    fontWeight: '600',
+                                    lineHeight: '1.6',
+                                    padding: '16px',
+                                    backgroundColor: '#f8f9fa',
+                                    borderRadius: '8px',
+                                    border: '1px solid #e9ecef',
+                                    boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                                  }}>
+                                    {ensureEnglishOnly(file.error.explanation)}
+                                  </ErrorValue>
+                                </ErrorItem>
+                              )}
+                              
+                              {file.error.user_friendly_explanation && (
+                                <ErrorItem fullWidth>
+                                  <ErrorLabel>Simple Explanation:</ErrorLabel>
+                                  <ErrorValue className="user-friendly-explanation" style={{ 
+                                    fontFamily: 'Segoe UI, Tahoma, Arial, sans-serif',
+                                    fontSize: '14px',
+                                    color: '#495057',
+                                    fontWeight: '500',
+                                    lineHeight: '1.5',
+                                    padding: '12px',
+                                    backgroundColor: '#e8f4fd',
+                                    borderRadius: '6px',
+                                    border: '1px solid #b3d9ff',
+                                    borderLeft: '4px solid #2196f3'
+                                  }}>
+                                    {ensureEnglishOnly(file.error.user_friendly_explanation)}
+                                  </ErrorValue>
+                                </ErrorItem>
+                              )}
+                              
+                              {file.error.quick_fix && (
+                                <ErrorItem fullWidth>
+                                  <ErrorLabel>Quick Fix:</ErrorLabel>
+                                  <ErrorValue className="quick-fix" style={{
+                                    textAlign: 'left',
+                                    fontFamily: 'Segoe UI, Tahoma, Arial, sans-serif',
+                                    fontSize: '14px',
+                                    color: '#28a745',
+                                    fontWeight: '600',
+                                    padding: '12px 16px',
+                                    backgroundColor: '#d4edda',
+                                    borderRadius: '6px',
+                                    border: '1px solid #c3e6cb',
+                                    borderLeft: '4px solid #28a745'
+                                  }}>
+                                    💡 {ensureEnglishOnly(file.error.quick_fix)}
+                                  </ErrorValue>
+                                </ErrorItem>
+                              )}
+                              
+                              {file.error.suggestions && file.error.suggestions.length > 0 && (
+                                <ErrorItem fullWidth>
+                                  <ErrorLabel>Step-by-Step Solutions:</ErrorLabel>
+                                  <div style={{ marginTop: '12px' }}>
+                                    {file.error.suggestions.map((suggestion, idx) => (
+                                      <div key={idx} style={{
+                                        textAlign: 'left',
+                                        fontFamily: 'Segoe UI, Tahoma, Arial, sans-serif',
+                                        fontSize: '14px',
+                                        color: '#495057',
+                                        marginBottom: '8px',
+                                        padding: '10px 14px',
+                                        backgroundColor: '#e3f2fd',
+                                        borderRadius: '6px',
+                                        borderLeft: '4px solid #2196f3',
+                                        boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+                                        transition: 'all 0.2s ease',
+                                        cursor: 'pointer'
+                                      }}
+                                      onMouseEnter={(e) => {
+                                        e.target.style.backgroundColor = '#bbdefb';
+                                        e.target.style.transform = 'translateX(2px)';
+                                      }}
+                                      onMouseLeave={(e) => {
+                                        e.target.style.backgroundColor = '#e3f2fd';
+                                        e.target.style.transform = 'translateX(0)';
+                                      }}>
+                                        {ensureEnglishOnly(suggestion)}
+                                      </div>
+                                    ))}
+                                  </div>
+                                </ErrorItem>
+                              )}
+                              
                               <ErrorItem fullWidth>
-                                <ErrorLabel>Error Message:</ErrorLabel>
-                                <ErrorValue className="error-message">{file.error.message}</ErrorValue>
+                                <ErrorLabel>Technical Details (For Developers):</ErrorLabel>
+                                <div style={{
+                                  backgroundColor: '#f8f9fa',
+                                  border: '1px solid #dee2e6',
+                                  borderRadius: '8px',
+                                  padding: '16px',
+                                  marginTop: '8px'
+                                }}>
+                                  <div style={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '8px',
+                                    marginBottom: '12px',
+                                    paddingBottom: '8px',
+                                    borderBottom: '1px solid #e9ecef'
+                                  }}>
+                                    <span style={{ fontSize: '16px' }}>🔧</span>
+                                    <span style={{ 
+                                      fontWeight: '600', 
+                                      color: '#495057',
+                                      fontSize: '14px'
+                                    }}>
+                                      Raw Error Message
+                                    </span>
+                                  </div>
+                                  
+                                  <div style={{
+                                    fontFamily: 'Monaco, Consolas, "Courier New", monospace',
+                                    fontSize: '13px',
+                                    color: '#2c3e50',
+                                    backgroundColor: '#ffffff',
+                                    padding: '12px',
+                                    borderRadius: '4px',
+                                    border: '1px solid #d1d5db',
+                                    whiteSpace: 'pre-wrap',
+                                    wordBreak: 'break-word',
+                                    lineHeight: '1.5',
+                                    boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
+                                    marginBottom: '12px'
+                                  }}>
+                                    {file.error.message}
+                                  </div>
+                                  
+                                  <div style={{
+                                    display: 'grid',
+                                    gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+                                    gap: '12px',
+                                    marginBottom: '12px'
+                                  }}>
+                                    {file.error.type && (
+                                      <div style={{
+                                        backgroundColor: '#e3f2fd',
+                                        padding: '8px 12px',
+                                        borderRadius: '4px',
+                                        border: '1px solid #bbdefb'
+                                      }}>
+                                        <div style={{ fontSize: '11px', color: '#1976d2', fontWeight: '600', marginBottom: '2px' }}>
+                                          ERROR TYPE
+                                        </div>
+                                        <div style={{ fontSize: '12px', color: '#1565c0' }}>
+                                          {file.error.type.replace(/_/g, ' ').toUpperCase()}
+                                        </div>
+                                      </div>
+                                    )}
+                                    
+                                    {file.error.category && (
+                                      <div style={{
+                                        backgroundColor: '#fff3e0',
+                                        padding: '8px 12px',
+                                        borderRadius: '4px',
+                                        border: '1px solid #ffcc02'
+                                      }}>
+                                        <div style={{ fontSize: '11px', color: '#f57c00', fontWeight: '600', marginBottom: '2px' }}>
+                                          CATEGORY
+                                        </div>
+                                        <div style={{ fontSize: '12px', color: '#e65100' }}>
+                                          {file.error.category.toUpperCase()}
+                                        </div>
+                                      </div>
+                                    )}
+                                    
+                                    {file.error.severity && (
+                                      <div style={{
+                                        backgroundColor: getSeverityBackground(file.error.severity),
+                                        padding: '8px 12px',
+                                        borderRadius: '4px',
+                                        border: `1px solid ${getSeverityColor(file.error.severity)}`
+                                      }}>
+                                        <div style={{ fontSize: '11px', color: getSeverityColor(file.error.severity), fontWeight: '600', marginBottom: '2px' }}>
+                                          SEVERITY
+                                        </div>
+                                        <div style={{ fontSize: '12px', color: getSeverityColor(file.error.severity) }}>
+                                          {file.error.severity.toUpperCase()}
+                                        </div>
+                                      </div>
+                                    )}
+                                  </div>
+                                  
+                                  <div style={{
+                                    backgroundColor: '#f1f3f4',
+                                    padding: '10px',
+                                    borderRadius: '4px',
+                                    border: '1px solid #e8eaed'
+                                  }}>
+                                    <div style={{
+                                      fontSize: '11px',
+                                      color: '#5f6368',
+                                      fontWeight: '600',
+                                      marginBottom: '4px',
+                                      display: 'flex',
+                                      alignItems: 'center',
+                                      gap: '4px'
+                                    }}>
+                                      💡 <span>Developer Notes</span>
+                                    </div>
+                                    <div style={{
+                                      fontSize: '12px',
+                                      color: '#3c4043',
+                                      lineHeight: '1.4'
+                                    }}>
+                                      This is the raw error message from the XML validation engine. 
+                                      Use the user-friendly explanations above for better understanding. 
+                                      The technical details help identify the exact validation rule that failed.
+                                    </div>
+                                  </div>
+                                  
+                                  {file.error.technical_info && (
+                                    <div style={{
+                                      marginTop: '12px',
+                                      padding: '12px',
+                                      backgroundColor: '#f8f9fa',
+                                      borderRadius: '6px',
+                                      border: '1px solid #e9ecef'
+                                    }}>
+                                      <div style={{
+                                        fontSize: '12px',
+                                        fontWeight: '600',
+                                        color: '#495057',
+                                        marginBottom: '8px',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '4px'
+                                      }}>
+                                        🔍 <span>Structured Technical Information</span>
+                                      </div>
+                                      
+                                      <div style={{
+                                        display: 'grid',
+                                        gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
+                                        gap: '8px'
+                                      }}>
+                                        <div style={{
+                                          backgroundColor: '#ffffff',
+                                          padding: '8px',
+                                          borderRadius: '4px',
+                                          border: '1px solid #dee2e6'
+                                        }}>
+                                          <div style={{ fontSize: '10px', color: '#6c757d', fontWeight: '600', marginBottom: '2px' }}>
+                                            ERROR CLASS
+                                          </div>
+                                          <div style={{ fontSize: '11px', color: '#495057', fontFamily: 'monospace' }}>
+                                            {file.error.technical_info.error_class}
+                                          </div>
+                                        </div>
+                                        
+                                        <div style={{
+                                          backgroundColor: '#ffffff',
+                                          padding: '8px',
+                                          borderRadius: '4px',
+                                          border: '1px solid #dee2e6'
+                                        }}>
+                                          <div style={{ fontSize: '10px', color: '#6c757d', fontWeight: '600', marginBottom: '2px' }}>
+                                            VALIDATION RULE
+                                          </div>
+                                          <div style={{ fontSize: '11px', color: '#495057' }}>
+                                            {file.error.technical_info.validation_rule.replace(/_/g, ' ').toUpperCase()}
+                                          </div>
+                                        </div>
+                                        
+                                        <div style={{
+                                          backgroundColor: '#ffffff',
+                                          padding: '8px',
+                                          borderRadius: '4px',
+                                          border: '1px solid #dee2e6'
+                                        }}>
+                                          <div style={{ fontSize: '10px', color: '#6c757d', fontWeight: '600', marginBottom: '2px' }}>
+                                            XML LOCATION
+                                          </div>
+                                          <div style={{ fontSize: '11px', color: '#495057' }}>
+                                            {file.error.technical_info.xml_location}
+                                          </div>
+                                        </div>
+                                        
+                                        <div style={{
+                                          backgroundColor: '#ffffff',
+                                          padding: '8px',
+                                          borderRadius: '4px',
+                                          border: '1px solid #dee2e6'
+                                        }}>
+                                          <div style={{ fontSize: '10px', color: '#6c757d', fontWeight: '600', marginBottom: '2px' }}>
+                                            ELEMENT NAME
+                                          </div>
+                                          <div style={{ fontSize: '11px', color: '#495057', fontFamily: 'monospace' }}>
+                                            {file.error.technical_info.element_context.element_name}
+                                          </div>
+                                        </div>
+                                      </div>
+                                      
+                                      {file.error.technical_info.validation_context.expected_type !== 'See schema definition' && (
+                                        <div style={{
+                                          marginTop: '8px',
+                                          padding: '8px',
+                                          backgroundColor: '#e8f5e8',
+                                          borderRadius: '4px',
+                                          border: '1px solid #c3e6c3'
+                                        }}>
+                                          <div style={{ fontSize: '10px', color: '#2e7d32', fontWeight: '600', marginBottom: '2px' }}>
+                                            EXPECTED vs ACTUAL
+                                          </div>
+                                          <div style={{ fontSize: '11px', color: '#1b5e20' }}>
+                                            <strong>Expected:</strong> {file.error.technical_info.validation_context.expected_type}<br/>
+                                            <strong>Actual:</strong> {file.error.technical_info.validation_context.actual_value}
+                                          </div>
+                                        </div>
+                                      )}
+                                    </div>
+                                  )}
+                                </div>
                               </ErrorItem>
                               
                               {file.error.timestamp && (

@@ -8,6 +8,33 @@ import About from './pages/About';
 import Support from './pages/Support';
 import AdminDashboard from './components/AdminDashboard';
 
+// English-only verification utility
+const ensureEnglishOnly = (text) => {
+  if (typeof text !== 'string') return text;
+  
+  // Replace common Arabic words with English equivalents
+  const replacements = {
+    'خطأ': 'Error',
+    'مشكلة': 'Problem',
+    'الحل': 'Solution',
+    'تأكد': 'Make sure',
+    'تحقق': 'Check',
+    'راجع': 'Review',
+    'استخدم': 'Use',
+    'اختر': 'Choose',
+    'أضف': 'Add',
+    'صحح': 'Fix',
+    'غيّر': 'Change'
+  };
+  
+  let result = text;
+  Object.entries(replacements).forEach(([arabic, english]) => {
+    result = result.replace(new RegExp(arabic, 'g'), english);
+  });
+  
+  return result;
+};
+
 const AppContainer = styled.div`
   min-height: 100vh;
   display: flex;

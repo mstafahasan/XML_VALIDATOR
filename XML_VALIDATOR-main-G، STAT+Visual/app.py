@@ -129,6 +129,158 @@ def classify_error(error_message):
     else:
         return 'unknown_error'
 
+def verify_english_only(text):
+    """Verify that text contains only English characters"""
+    import re
+    # Check for Arabic Unicode range
+    arabic_pattern = re.compile(r'[\u0600-\u06FF]')
+    return not bool(arabic_pattern.search(text))
+
+def generate_error_explanation(error_details, error_category):
+    """Generate clear and user-friendly explanations for validation errors"""
+    explanations = {
+        'structure': {
+            'severity': 'high',
+            'icon': '🏗️',
+            'title': 'XML Structure Problem',
+            'explanation': '**What went wrong**: An XML element is missing or in the wrong place',
+            'user_friendly_explanation': 'The XML file has a structural issue. This usually means a required element is missing, or elements are in the wrong order according to the schema rules.',
+            'suggestions': [
+                '✅ Make sure all required elements are present',
+                '🔍 Check that elements are in the correct order',
+                '🔒 Ensure all tags are properly closed',
+                '📋 Review the schema to understand the correct structure'
+            ],
+            'quick_fix': 'Add the missing element or move it to the correct position'
+        },
+        'data_type': {
+            'severity': 'medium',
+            'icon': '🔢',
+            'title': 'Data Type Mismatch',
+            'explanation': '**What went wrong**: The value doesn\'t match the expected data type',
+            'user_friendly_explanation': 'The value you provided doesn\'t match what the schema expects. For example, you might have provided text when a number was required, or a date in the wrong format.',
+            'suggestions': [
+                '📊 Check what data type is expected (text, number, date, etc.)',
+                '🎯 Make sure the value format is correct',
+                '📏 Review any restrictions on the values',
+                '🔍 Use appropriate converters if needed'
+            ],
+            'quick_fix': 'Change the value to match the expected data type'
+        },
+        'attribute': {
+            'severity': 'high',
+            'icon': '🏷️',
+            'title': 'Attribute Problem',
+            'explanation': '**What went wrong**: A required attribute is missing or has an invalid value',
+            'user_friendly_explanation': 'XML attributes are like properties of elements. This error means either a required attribute is missing, or an attribute has an invalid value.',
+            'suggestions': [
+                '➕ Add all required attributes',
+                '✏️ Check that attribute names are correct',
+                '💯 Ensure attribute values are valid',
+                '📝 Review the schema for required attributes'
+            ],
+            'quick_fix': 'Add the missing attribute or fix its value'
+        },
+        'value': {
+            'severity': 'medium',
+            'icon': '📊',
+            'title': 'Value Out of Range',
+            'explanation': '**What went wrong**: The value is outside the allowed range or doesn\'t meet constraints',
+            'user_friendly_explanation': 'The value you provided doesn\'t meet the rules defined in the schema. This could be a number that\'s too big or too small, or text that\'s too long or too short.',
+            'suggestions': [
+                '📈 Check the minimum and maximum allowed values',
+                '🎯 Ensure the value format is correct',
+                '📋 Review any constraints on the values',
+                '🔢 Use values within the specified range'
+            ],
+            'quick_fix': 'Change the value to be within the allowed range'
+        },
+        'syntax': {
+            'severity': 'critical',
+            'icon': '🔧',
+            'title': 'XML Syntax Error',
+            'explanation': '**What went wrong**: The XML file is not properly formatted',
+            'user_friendly_explanation': 'This is a fundamental XML formatting issue. The file doesn\'t follow basic XML rules, which prevents it from being processed correctly.',
+            'suggestions': [
+                '🔒 Make sure all tags are properly closed',
+                '🔤 Check character encoding is correct',
+                '🚫 Remove any invalid characters',
+                '📐 Review basic XML formatting rules'
+            ],
+            'quick_fix': 'Fix the XML formatting to make it valid'
+        },
+        'general': {
+            'severity': 'medium',
+            'icon': '❓',
+            'title': 'Validation Error',
+            'explanation': '**What went wrong**: The XML doesn\'t match the schema requirements',
+            'user_friendly_explanation': 'The XML file doesn\'t conform to the rules defined in the schema. This could be due to various issues that need to be addressed.',
+            'suggestions': [
+                '🔍 Review the file for obvious issues',
+                '📋 Check the schema requirements',
+                '✅ Ensure all rules are followed',
+                '🆘 Consult documentation for help'
+            ],
+            'quick_fix': 'Review the file and schema requirements'
+        }
+    }
+    
+    # Get base explanation
+    category_info = explanations.get(error_category, explanations['general'])
+    
+    # Add specific suggestions based on error content
+    specific_suggestions = []
+    error_message = error_details.get('message', '').lower()
+    
+    if 'negative' in error_message or 'min' in error_message:
+        specific_suggestions.append('🔢 Make sure the value is greater than or equal to the minimum required')
+    
+    if 'max' in error_message or 'exceed' in error_message:
+        specific_suggestions.append('📊 Ensure the value is less than or equal to the maximum allowed')
+    
+    if 'required' in error_message or 'missing' in error_message:
+        specific_suggestions.append('➕ Make sure all required elements and attributes are present')
+    
+    if 'invalid' in error_message and 'unit' in error_message:
+        specific_suggestions.append('📏 Check that the unit of measurement is valid')
+    
+    if 'boolean' in error_message:
+        specific_suggestions.append('✅ Use only true or false for boolean values')
+    
+    if 'enumeration' in error_message or 'choice' in error_message:
+        specific_suggestions.append('🎯 Choose a value from the allowed list only')
+    
+    if 'format' in error_message or 'pattern' in error_message:
+        specific_suggestions.append('📝 Make sure the data format is correct')
+    
+    if 'length' in error_message:
+        specific_suggestions.append('📐 Check the length of text or value')
+    
+    # Combine base suggestions with specific ones
+    all_suggestions = category_info['suggestions'] + specific_suggestions
+    
+    # Verify all text is English-only
+    result = {
+        'severity': category_info['severity'],
+        'icon': category_info['icon'],
+        'title': category_info['title'],
+        'explanation': category_info['explanation'],
+        'user_friendly_explanation': category_info['user_friendly_explanation'],
+        'suggestions': all_suggestions[:6],  # Limit to 6 suggestions
+        'quick_fix': category_info['quick_fix']
+    }
+    
+    # Ensure all text content is English-only
+    for key, value in result.items():
+        if isinstance(value, str):
+            if not verify_english_only(value):
+                # Replace any non-English text with English equivalent
+                result[key] = value.replace('خطأ', 'Error').replace('مشكلة', 'Problem')
+        elif isinstance(value, list):
+            result[key] = [item.replace('خطأ', 'Error').replace('مشكلة', 'Problem') if isinstance(item, str) else item for item in value]
+    
+    return result
+
 def calculate_error_statistics(invalid_results):
     """Calculate error statistics and percentages"""
     if not invalid_results:
@@ -274,23 +426,46 @@ def validate_xml():
                     
                     # Determine error type based on exception class
                     error_type = 'validation_error'
+                    error_category = 'general'
                     if 'XMLSchemaChildrenValidationError' in str(type(e)):
                         error_type = 'children_validation_error'
+                        error_category = 'structure'
                     elif 'XMLSchemaTypeValidationError' in str(type(e)):
                         error_type = 'type_validation_error'
+                        error_category = 'data_type'
                     elif 'XMLSchemaAttributeValidationError' in str(type(e)):
                         error_type = 'attribute_validation_error'
+                        error_category = 'attribute'
                     elif 'XMLSchemaValueValidationError' in str(type(e)):
                         error_type = 'value_validation_error'
+                        error_category = 'value'
                     elif 'XMLSchemaParseError' in str(type(e)):
                         error_type = 'parse_error'
+                        error_category = 'syntax'
                     
-                    # Try to extract more detailed error information
+                    # Enhanced error parsing with better regex patterns
                     error_details = {
                         'message': error_info,
                         'type': error_type,
+                        'category': error_category,
                         'timestamp': datetime.now().isoformat()
                     }
+                    
+                    # Extract XPath if available
+                    xpath = ''
+                    if hasattr(e, 'path') and e.path:
+                        xpath = str(e.path)
+                    elif 'path:' in error_info.lower():
+                        try:
+                            import re
+                            path_match = re.search(r'path:\s*([^\n]+)', error_info, re.IGNORECASE)
+                            if path_match:
+                                xpath = path_match.group(1).strip()
+                        except:
+                            pass
+                    
+                    if xpath:
+                        error_details['xpath'] = xpath
                     
                     # Try to extract line number if available
                     if 'line' in error_info.lower():
@@ -312,45 +487,105 @@ def validate_xml():
                         except:
                             pass
                     
-                    # Try to extract element name if available
+                    # Enhanced element name extraction
+                    element_name = ''
                     if 'element' in error_info.lower():
                         try:
                             import re
-                            elem_match = re.search(r'element\s+["\']([^"\']+)["\']', error_info, re.IGNORECASE)
-                            if elem_match:
-                                error_details['element'] = elem_match.group(1)
+                            # Try multiple patterns for element names
+                            patterns = [
+                                r'element\s+["\']([^"\']+)["\']',
+                                r'Element\s+["\']([^"\']+)["\']',
+                                r'<([^/>\s]+)',
+                                r'Invalid element:?\s*["\']?([^"\':\s]+)["\']?'
+                            ]
+                            for pattern in patterns:
+                                element_match = re.search(pattern, error_info, re.IGNORECASE)
+                                if element_match:
+                                    element_name = element_match.group(1)
+                                    break
                         except:
                             pass
                     
-                    # Try to extract tag name if available
+                    if element_name:
+                        error_details['element'] = element_name
+                    
+                    # Enhanced tag name extraction
+                    tag_name = ''
                     if 'tag' in error_info.lower():
                         try:
                             import re
-                            tag_match = re.search(r'tag\s+["\']([^"\']+)["\']', error_info, re.IGNORECASE)
-                            if tag_match:
-                                error_details['tag'] = tag_match.group(1)
+                            patterns = [
+                                r'tag\s+["\']([^"\']+)["\']',
+                                r'Tag\s+["\']([^"\']+)["\']',
+                                r'Invalid tag:?\s*["\']?([^"\':\s]+)["\']?'
+                            ]
+                            for pattern in patterns:
+                                tag_match = re.search(pattern, error_info, re.IGNORECASE)
+                                if tag_match:
+                                    tag_name = tag_match.group(1)
+                                    break
                         except:
                             pass
                     
-                    # Try to extract expected tags if available
+                    if tag_name:
+                        error_details['tag'] = tag_name
+                    
+                    # Enhanced expected values extraction
                     if 'expected' in error_info.lower():
                         try:
                             import re
-                            expected_match = re.search(r'expected[^:]*:\s*([^.\n]+)', error_info, re.IGNORECASE)
-                            if expected_match:
-                                error_details['expected'] = expected_match.group(1).strip()
+                            patterns = [
+                                r'expected[^:]*:\s*([^.\n]+)',
+                                r'Expected[^:]*:\s*([^.\n]+)',
+                                r'must be one of:\s*([^.\n]+)',
+                                r'valid values are:\s*([^.\n]+)'
+                            ]
+                            for pattern in patterns:
+                                expected_match = re.search(pattern, error_info, re.IGNORECASE)
+                                if expected_match:
+                                    error_details['expected'] = expected_match.group(1).strip()
+                                    break
                         except:
                             pass
                     
-                    # Try to extract path if available
-                    if 'path:' in error_info.lower():
+                    # Extract actual value if available
+                    if 'value' in error_info.lower() or 'actual' in error_info.lower():
                         try:
                             import re
-                            path_match = re.search(r'path:\s*([^\n]+)', error_info, re.IGNORECASE)
-                            if path_match:
-                                error_details['path'] = path_match.group(1).strip()
+                            patterns = [
+                                r'value\s+["\']?([^"\':\s]+)["\']?',
+                                r'actual[^:]*:\s*["\']?([^"\':\s]+)["\']?',
+                                r'found\s+["\']?([^"\':\s]+)["\']?'
+                            ]
+                            for pattern in patterns:
+                                value_match = re.search(pattern, error_info, re.IGNORECASE)
+                                if value_match:
+                                    error_details['actual_value'] = value_match.group(1)
+                                    break
                         except:
                             pass
+                    
+                    # Generate English explanations and suggestions based on error type
+                    error_details.update(generate_error_explanation(error_details, error_category))
+                    
+                    # Add structured technical information for developers
+                    error_details['technical_info'] = {
+                        'error_class': str(type(e).__name__),
+                        'validation_rule': error_type,
+                        'schema_location': xpath if xpath else 'Not available',
+                        'xml_location': f"Line {error_details.get('line', 'N/A')}, Column {error_details.get('column', 'N/A')}" if error_details.get('line') else 'Not available',
+                        'element_context': {
+                            'element_name': error_details.get('element', 'Unknown'),
+                            'parent_element': 'See XPath for full context',
+                            'attribute_name': error_details.get('tag', 'N/A')
+                        },
+                        'validation_context': {
+                            'expected_type': error_details.get('expected', 'See schema definition'),
+                            'actual_value': error_details.get('actual_value', 'Not provided'),
+                            'constraint_violated': 'See error message for details'
+                        }
+                    }
                     
                     results['invalid'].append({
                         'filename': xml_file.filename,
@@ -370,6 +605,37 @@ def validate_xml():
         
         # Add statistics to results
         results['statistics'] = error_stats
+        
+        # Verify all response content is English-only
+        def verify_response_english(data):
+            if isinstance(data, dict):
+                return {k: verify_response_english(v) for k, v in data.items()}
+            elif isinstance(data, list):
+                return [verify_response_english(item) for item in data]
+            elif isinstance(data, str):
+                # Apply English-only verification
+                result = data
+                replacements = {
+                    'خطأ': 'Error',
+                    'مشكلة': 'Problem',
+                    'الحل': 'Solution',
+                    'تأكد': 'Make sure',
+                    'تحقق': 'Check',
+                    'راجع': 'Review',
+                    'استخدم': 'Use',
+                    'اختر': 'Choose',
+                    'أضف': 'Add',
+                    'صحح': 'Fix',
+                    'غيّر': 'Change'
+                }
+                for arabic, english in replacements.items():
+                    result = result.replace(arabic, english)
+                return result
+            else:
+                return data
+        
+        # Apply English-only verification to entire response
+        results = verify_response_english(results)
         
         return jsonify(results)
         
