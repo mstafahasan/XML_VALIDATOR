@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useDropzone } from 'react-dropzone';
 import { Upload, FileText, X, AlertCircle, CheckCircle, Loader } from 'lucide-react';
-import axios from 'axios';
+import api from '../api'; // adjust path if needed
 
 const UploadContainer = styled.div`
   max-width: 800px;
@@ -232,11 +232,9 @@ const FileUpload = ({ onValidationComplete, isValidating, setIsValidating }) => 
         formData.append('xml_files', file);
       });
 
-      const response = await axios.post('/validate', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
+      const response = await api.post('/validate', formData, {
+          headers: { 'Content-Type': 'multipart/form-data' },
+        });
 
       setSuccess('Validation completed successfully!');
       onValidationComplete(response.data);

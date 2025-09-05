@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
-import { Menu, X, Code } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 
 const HeaderContainer = styled.header`
   background: rgba(255, 255, 255, 0.95);

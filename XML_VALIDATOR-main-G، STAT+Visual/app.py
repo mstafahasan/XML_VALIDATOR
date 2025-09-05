@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, render_template, session, redirect, url_for, send_file
+from flask import Flask, request, jsonify, render_template, session, redirect, url_for, send_file, send_from_directory
 import os
 import xmlschema
 import sys
@@ -8,7 +8,6 @@ from functools import wraps
 import zipfile
 import io
 from werkzeug.utils import secure_filename
-
 # Check if running in an interactive shell (e.g., IPython/Jupyter)
 if hasattr(sys, 'ps1') or 'IPYTHON' in os.environ.get('TERM', ''):
     print("Error: This script should not be run in an interactive shell (e.g., IPython or Jupyter).", file=sys.stderr)
@@ -344,9 +343,13 @@ def admin_required(f):
 # Initialize data files
 init_data_files()
 
-@app.route('/')
+@app.route("/")
 def index():
-    return render_template('index.html')
+    return send_from_directory(app.static_folder, "index.html")
+
+@app.errorhandler(404)
+def not_found(e):
+    return send_from_directory(app.static_folder, "index.html")
 
 @app.route('/about')
 def about():
@@ -973,7 +976,8 @@ The validator will automatically determine if each XML file is valid or invalid 
 if __name__ == '__main__':
     try:
         print("Starting Flask server...")
-        app.run(debug=True, host='0.0.0.0', port=5001)
+        port = int(os.environ.get('PORT', 5000))
+        app.run(debug=False, host='0.0.0.0', port=port)
     except Exception as e:
         print(f"Failed to start server: {str(e)}", file=sys.stderr)
         sys.exit(1)

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
-import { Mail, BookOpen, HelpCircle, Code } from 'lucide-react';
+import { BookOpen, HelpCircle, Code } from 'lucide-react';
 
 const SupportContainer = styled.div`
   min-height: 100vh;

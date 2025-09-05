@@ -591,30 +591,7 @@ const AdminDashboard = () => {
     }
   };
 
-  // Update message
-  const updateMessage = async (messageId, updates) => {
-    try {
-      const response = await fetch(`/admin/message/${messageId}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(updates)
-      });
 
-      const result = await response.json();
-
-      if (response.ok && result.success) {
-        fetchMessages();
-        fetchStats();
-      } else {
-        window.alert(`Error: ${result.error || 'Failed to update message'}`);
-      }
-    } catch (error) {
-      console.error('Error updating message:', error);
-              window.alert('Failed to update message');
-    }
-  };
 
   // Reply to message
   const handleReply = async (messageId) => {

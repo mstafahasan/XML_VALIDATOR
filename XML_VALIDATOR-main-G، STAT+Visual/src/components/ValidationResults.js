@@ -42,7 +42,7 @@ const ensureEnglishOnly = (text) => {
     'أضف': 'Add',
     'صحح': 'Fix',
     'غيّر': 'Change',
-    'راجع': 'Review'
+   // 'راجع': 'Review'
   };
   
   let result = text;
