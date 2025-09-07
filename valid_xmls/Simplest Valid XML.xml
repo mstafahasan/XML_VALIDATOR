@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+  <AR-PACKAGE>
+      <ELEMENTS>
+          <ECUs>
+            <SHORT-NAME name="TestECU"/> 
+            <SoCs>
+                <SHORT-NAME name="TestSoC"/>
+                <AXI-BUS/>
+                <ETHERNET-INTERFACE/>
+                <UCIe-INTERFACE Mode="host"/>
+            </SoCs>
+          </ECUs>
+      </ELEMENTS>
+  </AR-PACKAGE>
