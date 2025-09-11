@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<AR-PACKAGE>
+  <ELEMENTS>
+    <Simulation-Time value="2000" unit="ms"/>
+    <SENDER-RECEIVER-INTERFACE>
+      <SHORT-NAME name="InterfaceA"/>
+      <DATA-ELEMENTS>
+        <VARIABLE-DATA-PROTOTYPE>
+          <SHORT-NAME name="ProtoA1"/>
+          <TYPE-TREF>
+            <Invalid-Type/> <!-- Error: not a valid choice -->
+          </TYPE-TREF>
+        </VARIABLE-DATA-PROTOTYPE>
+      </DATA-ELEMENTS>
+    </SENDER-RECEIVER-INTERFACE>
+    <SENDER-RECEIVER-INTERFACE>
+      <SHORT-NAME name="InterfaceB"/>
+      <DATA-ELEMENTS>
+        <VARIABLE-DATA-PROTOTYPE>
+          <SHORT-NAME name="ProtoB1"/>
+          <TYPE-TREF>
+            <Array-of-uint8 No_Of_Bytes="8192">
+              <Fixed-values-generated Default-Value="0"/>
+            </Array-of-uint8>
+          </TYPE-TREF>
+        </VARIABLE-DATA-PROTOTYPE>
+      </DATA-ELEMENTS>
+    </SENDER-RECEIVER-INTERFACE>
+    <APPLICATION-SW-COMPONENT-TYPE>
+      <SHORT-NAME name="SWC2"/>
+      <PORTS>
+        <P-PORT-PROTOTYPE>
+          <SHORT-NAME name="PortA"/>
+          <PROVIDED-INTERFACE-TREF DEST="/InterfaceA"/>
+        </P-PORT-PROTOTYPE>
+        <R-PORT-PROTOTYPE>
+          <SHORT-NAME name="PortB"/>
+          <REQUIRED-INTERFACE-TREF DEST="/InterfaceB"/>
+        </R-PORT-PROTOTYPE>
+      </PORTS>
+      <INTERNAL-BEHAVIORS>
+        <SWC-INTERNAL-BEHAVIOR>
+          <SHORT-NAME name="Behavior2"/>
+          <RUNNABLES>
+            <RUNNABLE-ENTITY>
+              <SHORT-NAME name="Runnable2"/>
+              <DATA-READ-ACCESS>
+                <VARIABLE-ACCESS>
+                  <SHORT-NAME name="AccessA"/>
+                  <ACCESSED-VARIABLE>
+                    <AUTOSAR-VARIABLE-IREF>
+                      <PORT-PROTOTYPE-REF DEST="/SWC2/PortB"/>
+                      <TARGET-DATA-PROTOTYPE-REF DEST="/InterfaceB/ProtoB1"/>
+                    </AUTOSAR-VARIABLE-IREF>
+                  </ACCESSED-VARIABLE>
+                </VARIABLE-ACCESS>
+              </DATA-READ-ACCESS>
+            </RUNNABLE-ENTITY>
+          </RUNNABLES>
+        </SWC-INTERNAL-BEHAVIOR>
+      </INTERNAL-BEHAVIORS>
+    </APPLICATION-SW-COMPONENT-TYPE>
+    <SWC-CUSTOM-BEHAVIOR>
+      <SHORT-NAME name="CustomBehavior2"/>
+      <OPERATIONS-SEQUENCE>
+        <OPERATION>
+          <BATCH-NORMALIZATION height="256" width="256" channels="4"/>
+        </OPERATION>
+      </OPERATIONS-SEQUENCE>
+    </SWC-CUSTOM-BEHAVIOR>
+    <PRE-BUILT-APPLICATION>
+      <SHORT-NAME name="App2"/>
+      <PATH DEST="/path/to/app2"/>
+    </PRE-BUILT-APPLICATION>
+    <Network-Topology>
+      <InterECU_communication>
+        <CAN-BUS CAN-FD="false">
+          <SHORT-NAME name="CAN2"/>
+          <BaudRate value="250000"/>
+          <INTERFACE-TREF DEST="/InterfaceA"/>
+        </CAN-BUS>
+        <CAN-BUS> <!-- Error: exceeds maxOccurs (max 8) if repeated -->
+          <SHORT-NAME name="CAN3"/>
+          <BaudRate value="250000"/>
+          <INTERFACE-TREF DEST="/InterfaceA"/>
+        </CAN-BUS>
+        <!-- Imagine 8 more to exceed limit -->
+      </InterECU_communication>
+    </Network-Topology>
+    <ECUs>
+      <SHORT-NAME name="ECU2"/>
+      <SoCs>
+        <SHORT-NAME name="SoC2"/>
+        <AXI-BUS width="16" frequency="300000000"/>
+        <ETHERNET-INTERFACE Mode="native"/>
+        <UCIe-INTERFACE Mode="endpoint">
+          <Endpoint_DMA_Configuration Frequency="400000000"/>
+          <D2D_Configuration DestChipletRef="/ECU2/SoC2/Chiplet1">
+            <LINK_WIDTH value="1024"/>
+            <LINK_FREQUENCY value="1000000000"/>
+            <PROTOCOL_CONV_LATENCY value="4" unit="ns"/>
+            <CHIPLET_LINK_LATENCY value="3" unit="ns"/>
+            <LOGICAL_IF_DELAY value="5" unit="ns"/>
+            <PHYSICAL_IF_DELAY value="4" unit="ns"/>
+          </D2D_Configuration>
+          <D2D_Configuration DestChipletRef="/Extra"> <!-- Error: exceeds maxOccurs 3 -->
+            <LINK_WIDTH value="1024"/>
+            <LINK_FREQUENCY value="1000000000"/>
+            <PROTOCOL_CONV_LATENCY value="4" unit="ns"/>
+          </D2D_Configuration>
+        </UCIe-INTERFACE>
+        <Chiplet>
+          <SHORT-NAME name="Chiplet1"/>
+          <AXI-BUS width="8" frequency="200000000"/>
+          <CPU_Cluster>
+            <Operating-System>
+              <Linux Affine-tasks-byOS="false" Show_UART_Terminal="true">
+                <Buildroot_File_System>buildroot</Buildroot_File_System>
+              </Linux>
+            </Operating-System>
+            <ARMV9-Family>
+              <AFM-CortexA720 CoresPerCluster="8">
+                <SHORT-NAME name="Cluster2"/>
+                <Frequency value="1000000000"/>
+              </AFM-CortexA720>
+            </ARMV9-Family>
+          </CPU_Cluster>
+          <Generic_Hardware>
+            <SHORT-NAME name="HW2"/>
+            <Frequency value="500000000"/>
+            <AXI-Master-Port priority="5"/>
+            <MEMORY-INTERFACE InternalMemory="false"/>
+          </Generic_Hardware>
+          <Generic_Hardware> <!-- Error: exceeds max 32 if repeated -->
+            <SHORT-NAME name="HW3"/>
+            <Frequency value="500000000"/>
+            <AXI-Master-Port priority="5"/>
+            <MEMORY-INTERFACE InternalMemory="false"/>
+          </Generic_Hardware>
+          <!-- Imagine 31 more to exceed limit -->
+        </Chiplet>
+      </SoCs>
+    </ECUs>
+    <HW-SW-MAPPING ClusterRef="/ECU2/SoC2/Chiplet1/Cluster2">
+      <Core-PrebuiltApplication-Mapping CoreId="1" PrebuiltApplicationRef="/App2"/>
+    </HW-SW-MAPPING>
+    <Analysis>
+      <HW-Analysis-Enable>
+        <Selected-SoCs>
+          <SoC DEST="/ECU2/SoC2"/>
+        </Selected-SoCs>
+      </HW-Analysis-Enable>
+    </Analysis>
+  </ELEMENTS>
+</AR-PACKAGE>
