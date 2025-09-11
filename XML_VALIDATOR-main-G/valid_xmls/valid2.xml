@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<AR-PACKAGE>
+  <ELEMENTS>
+    <Simulation-Time value="2000" unit="ms"/>
+    <SENDER-RECEIVER-INTERFACE>
+      <SHORT-NAME name="InterfaceA"/>
+      <DATA-ELEMENTS>
+        <VARIABLE-DATA-PROTOTYPE>
+          <SHORT-NAME name="ProtoA1"/>
+          <TYPE-TREF>
+            <Array-of-uint8 No_Of_Bytes="4096">
+              <Random-Values-generated>
+                <Data-Range min="50" max="200"/>
+              </Random-Values-generated>
+            </Array-of-uint8>
+          </TYPE-TREF>
+        </VARIABLE-DATA-PROTOTYPE>
+        <VARIABLE-DATA-PROTOTYPE>
+          <SHORT-NAME name="ProtoA2"/>
+          <TYPE-TREF>
+            <Array-of-float No_Of_Elements="1024">
+              <Random-Values-generated>
+                <Data-Range min="0.0" max="10.0"/>
+              </Random-Values-generated>
+            </Array-of-float>
+          </TYPE-TREF>
+        </VARIABLE-DATA-PROTOTYPE>
+      </DATA-ELEMENTS>
+    </SENDER-RECEIVER-INTERFACE>
+    <SENDER-RECEIVER-INTERFACE>
+      <SHORT-NAME name="InterfaceB"/>
+      <DATA-ELEMENTS>
+        <VARIABLE-DATA-PROTOTYPE>
+          <SHORT-NAME name="ProtoB1"/>
+          <TYPE-TREF>
+            <Array-of-uint8 No_Of_Bytes="8192">
+              <Fixed-values-generated Default-Value="0"/>
+            </Array-of-uint8>
+          </TYPE-TREF>
+        </VARIABLE-DATA-PROTOTYPE>
+      </DATA-ELEMENTS>
+    </SENDER-RECEIVER-INTERFACE>
+    <APPLICATION-SW-COMPONENT-TYPE>
+      <SHORT-NAME name="SWC2"/>
+      <PORTS>
+        <P-PORT-PROTOTYPE>
+          <SHORT-NAME name="PortA"/>
+          <PROVIDED-INTERFACE-TREF DEST="/InterfaceA"/>
+        </P-PORT-PROTOTYPE>
+        <R-PORT-PROTOTYPE>
+          <SHORT-NAME name="PortB"/>
+          <REQUIRED-INTERFACE-TREF DEST="/InterfaceB"/>
+        </R-PORT-PROTOTYPE>
+      </PORTS>
+      <INTERNAL-BEHAVIORS>
+        <SWC-INTERNAL-BEHAVIOR>
+          <SHORT-NAME name="Behavior2"/>
+          <RUNNABLES>
+            <RUNNABLE-ENTITY>
+              <SHORT-NAME name="Runnable2"/>
+              <DATA-READ-ACCESS>
+                <VARIABLE-ACCESS>
+                  <SHORT-NAME name="AccessA"/>
+                  <ACCESSED-VARIABLE>
+                    <AUTOSAR-VARIABLE-IREF>
+                      <PORT-PROTOTYPE-REF DEST="/SWC2/PortB"/>
+                      <TARGET-DATA-PROTOTYPE-REF DEST="/InterfaceB/ProtoB1"/>
+                    </AUTOSAR-VARIABLE-IREF>
+                  </ACCESSED-VARIABLE>
+                </VARIABLE-ACCESS>
+              </DATA-READ-ACCESS>
+              <DATA-WRITE-ACCESS>
+                <VARIABLE-ACCESS>
+                  <SHORT-NAME name="AccessB"/>
+                  <ACCESSED-VARIABLE>
+                    <AUTOSAR-VARIABLE-IREF>
+                      <PORT-PROTOTYPE-REF DEST="/SWC2/PortA"/>
+                      <TARGET-DATA-PROTOTYPE-REF DEST="/InterfaceA/ProtoA1"/>
+                    </AUTOSAR-VARIABLE-IREF>
+                  </ACCESSED-VARIABLE>
+                </VARIABLE-ACCESS>
+              </DATA-WRITE-ACCESS>
+            </RUNNABLE-ENTITY>
+            <RUNNABLE-ENTITY>
+              <SHORT-NAME name="Runnable3"/>
+              <DATA-READ-ACCESS>
+                <VARIABLE-ACCESS>
+                  <SHORT-NAME name="AccessC"/>
+                  <ACCESSED-VARIABLE>
+                    <AUTOSAR-VARIABLE-IREF>
+                      <PORT-PROTOTYPE-REF DEST="/SWC2/PortB"/>
+                      <TARGET-DATA-PROTOTYPE-REF DEST="/InterfaceB/ProtoB1"/>
+                    </AUTOSAR-VARIABLE-IREF>
+                  </ACCESSED-VARIABLE>
+                </VARIABLE-ACCESS>
+              </DATA-READ-ACCESS>
+            </RUNNABLE-ENTITY>
+          </RUNNABLES>
+          <EVENTS>
+            <TIMING-EVENT>
+              <SHORT-NAME name="EventA"/>
+              <START-ON-EVENT-REF DEST="/SWC2/Behavior2/Runnable2"/>
+              <PERIOD value="100" unit="ms"/>
+            </TIMING-EVENT>
+            <DATA-RECEIVED-EVENT>
+              <SHORT-NAME name="EventB"/>
+              <START-ON-EVENT-REF DEST="/SWC2/Behavior2/Runnable3"/>
+              <DATA-IREF>
+                <TARGET-DATA-ELEMENT-REF DEST="/SWC2/Behavior2/Runnable3/ProtoB1"/>
+                <TARGET-DATA-ELEMENT-REF DEST="/SWC2/Behavior2/Runnable3/ProtoA2"/>
+              </DATA-IREF>
+            </DATA-RECEIVED-EVENT>
+          </EVENTS>
+        </SWC-INTERNAL-BEHAVIOR>
+      </INTERNAL-BEHAVIORS>
+    </APPLICATION-SW-COMPONENT-TYPE>
+    <SWC-CUSTOM-BEHAVIOR>
+      <SHORT-NAME name="CustomBehavior2"/>
+      <OPERATIONS-SEQUENCE>
+        <OPERATION>
+          <BATCH-NORMALIZATION height="256" width="256" channels="4"/>
+        </OPERATION>
+        <OPERATION>
+          <AVG-POOL kernelSize="5" stride="1"/>
+        </OPERATION>
+        <OPERATION>
+          <CUSTOM-OPERATION functionPrototype="void customFunc(void)" headerFile="custom.h" includesDir="/includes" sourcesDir="/sources"/>
+        </OPERATION>
+      </OPERATIONS-SEQUENCE>
+    </SWC-CUSTOM-BEHAVIOR>
+    <PRE-BUILT-APPLICATION>
+      <SHORT-NAME name="App2"/>
+      <PATH DEST="/path/to/app2"/>
+    </PRE-BUILT-APPLICATION>
+    <Network-Topology>
+      <InterECU_communication>
+        <CAN-BUS CAN-FD="false">
+          <SHORT-NAME name="CAN2"/>
+          <BaudRate value="250000"/>
+          <INTERFACE-TREF DEST="/InterfaceA"/>
+          <INTERFACE-TREF DEST="/InterfaceB"/>
+        </CAN-BUS>
+      </InterECU_communication>
+    </Network-Topology>
+    <ECUs>
+      <SHORT-NAME name="ECU2"/>
+      <SoCs>
+        <SHORT-NAME name="SoC2"/>
+        <AXI-BUS width="16" frequency="300000000"/>
+        <ETHERNET-INTERFACE Mode="native"/>
+        <UCIe-INTERFACE Mode="endpoint">
+          <Endpoint_DMA_Configuration Frequency="400000000"/>
+          <D2D_Configuration DestChipletRef="/ECU2/SoC2/Chiplet1">
+            <LINK_WIDTH value="1024"/>
+            <LINK_FREQUENCY value="1000000000"/>
+            <PROTOCOL_CONV_LATENCY value="4" unit="ns"/>
+            <CHIPLET_LINK_LATENCY value="3" unit="ns"/>
+            <LOGICAL_IF_DELAY value="5" unit="ns"/>
+            <PHYSICAL_IF_DELAY value="4" unit="ns"/>
+          </D2D_Configuration>
+        </UCIe-INTERFACE>
+        <Chiplet>
+          <SHORT-NAME name="Chiplet1"/>
+          <AXI-BUS width="8" frequency="200000000"/>
+          <ETHERNET-INTERFACE Mode="simulated"/>
+          <UCIe-INTERFACE Mode="host"/>
+          <CPU_Cluster>
+            <Operating-System>
+              <Linux Affine-tasks-byOS="false" Show_UART_Terminal="true">
+                <Buildroot_File_System>buildroot</Buildroot_File_System>
+              </Linux>
+            </Operating-System>
+            <ARMV9-Family>
+              <AFM-CortexA720 CoresPerCluster="8">
+                <SHORT-NAME name="Cluster2"/>
+                <Frequency value="1000000000"/>
+              </AFM-CortexA720>
+            </ARMV9-Family>
+          </CPU_Cluster>
+          <Generic_Hardware>
+            <SHORT-NAME name="HW2"/>
+            <Frequency value="500000000"/>
+            <AXI-Master-Port priority="5"/>
+            <MEMORY-INTERFACE InternalMemory="false"/>
+            <INTERNAL-BEHAVIOR>
+              <PORTS>
+                <R-PORT-PROTOTYPE>
+                  <SHORT-NAME name="Rport1"/>
+                  <REQUIRED-INTERFACE-TREF DEST="/InterfaceA"/>
+                </R-PORT-PROTOTYPE>
+              </PORTS>
+              <OPERATIONS-SEQUENCE>
+                <OPERATION>
+                  <TRANSPOSED-CONVOLUTION kernelSize="7"/>
+                </OPERATION>
+              </OPERATIONS-SEQUENCE>
+              <EVENT>
+                <DATA-RECEIVED-EVENT>
+                  <REQUIRED-PORT-TREF DEST="/HW2/Rport1"/>
+                </DATA-RECEIVED-EVENT>
+              </EVENT>
+            </INTERNAL-BEHAVIOR>
+          </Generic_Hardware>
+        </Chiplet>
+      </SoCs>
+    </ECUs>
+    <HW-SW-MAPPING ClusterRef="/ECU2/SoC2/Chiplet1/Cluster2">
+      <Core-PrebuiltApplication-Mapping CoreId="1" PrebuiltApplicationRef="/App2"/>
+      <!-- Removed Core-Runnable-Mapping to comply with xs:choice -->
+    </HW-SW-MAPPING>
+    <Analysis>
+      <HW-Analysis-Enable>
+        <Selected-SoCs>
+          <SoC DEST="/ECU2/SoC2"/>
+        </Selected-SoCs>
+      </HW-Analysis-Enable>
+      <Power-Analysis-Enable>
+        <ALL-SoCs>enabled</ALL-SoCs>
+      </Power-Analysis-Enable>
+    </Analysis>
+  </ELEMENTS>
+</AR-PACKAGE>

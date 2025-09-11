@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<AR-PACKAGE>
+  <ELEMENTS>
+    <Simulation-Time value="-1000" unit="invalid_unit"/> <!-- Error: negative value, invalid unit -->
+    <SENDER-RECEIVER-INTERFACE>
+      <SHORT-NAME name="Interface1"/>
+      <DATA-ELEMENTS>
+        <VARIABLE-DATA-PROTOTYPE>
+          <SHORT-NAME name="DataProto1"/>
+          <TYPE-TREF>
+            <Array-of-uint8 No_Of_Bytes="0"/> <!-- Error: min 1 -->
+          </TYPE-TREF>
+        </VARIABLE-DATA-PROTOTYPE>
+        <VARIABLE-DATA-PROTOTYPE>
+          <SHORT-NAME name="DataProto2"/>
+          <TYPE-TREF>
+            <Array-of-float No_Of_Elements="-512"/> <!-- Error: negative value -->
+          </TYPE-TREF>
+        </VARIABLE-DATA-PROTOTYPE>
+      </DATA-ELEMENTS>
+    </SENDER-RECEIVER-INTERFACE>
+    <SENDER-RECEIVER-INTERFACE>
+      <SHORT-NAME name="Interface2"/>
+      <DATA-ELEMENTS>
+        <VARIABLE-DATA-PROTOTYPE>
+          <SHORT-NAME name="DataProto3"/>
+          <TYPE-TREF>
+            <Array-of-uint8 No_Of_Bytes="130023425"/> <!-- Error: exceeds max -->
+          </TYPE-TREF>
+        </VARIABLE-DATA-PROTOTYPE>
+      </DATA-ELEMENTS>
+    </SENDER-RECEIVER-INTERFACE>
+    <APPLICATION-SW-COMPONENT-TYPE>
+      <SHORT-NAME name="SWC1"/>
+      <PORTS>
+        <P-PORT-PROTOTYPE>
+          <SHORT-NAME name="Port1"/>
+          <PROVIDED-INTERFACE-TREF DEST="/Interface1"/>
+        </P-PORT-PROTOTYPE>
+        <R-PORT-PROTOTYPE>
+          <SHORT-NAME name="Port2"/>
+          <REQUIRED-INTERFACE-TREF DEST="/Interface2"/>
+        </R-PORT-PROTOTYPE>
+      </PORTS>
+      <INTERNAL-BEHAVIORS>
+        <SWC-INTERNAL-BEHAVIOR>
+          <SHORT-NAME name="Behavior1"/>
+          <RUNNABLES>
+            <RUNNABLE-ENTITY>
+              <SHORT-NAME name="Runnable1"/>
+              <DATA-READ-ACCESS>
+                <VARIABLE-ACCESS>
+                  <SHORT-NAME name="Access1"/>
+                  <ACCESSED-VARIABLE>
+                    <AUTOSAR-VARIABLE-IREF>
+                      <PORT-PROTOTYPE-REF DEST="/SWC1/Port2"/>
+                    </AUTOSAR-VARIABLE-IREF> <!-- Error: missing TARGET-DATA-PROTOTYPE-REF -->
+                  </ACCESSED-VARIABLE>
+                </VARIABLE-ACCESS>
+              </DATA-READ-ACCESS>
+              <DATA-WRITE-ACCESS>
+                <VARIABLE-ACCESS>
+                  <SHORT-NAME name="Access2"/>
+                  <ACCESSED-VARIABLE>
+                    <AUTOSAR-VARIABLE-IREF>
+                      <PORT-PROTOTYPE-REF DEST="/SWC1/Port1"/>
+                      <TARGET-DATA-PROTOTYPE-REF DEST="/Interface1/DataProto1"/>
+                    </AUTOSAR-VARIABLE-IREF>
+                  </ACCESSED-VARIABLE>
+                </VARIABLE-ACCESS>
+              </DATA-WRITE-ACCESS>
+            </RUNNABLE-ENTITY>
+          </RUNNABLES>
+          <EVENTS>
+            <TIMING-EVENT>
+              <SHORT-NAME name="Event1"/>
+              <START-ON-EVENT-REF DEST="/SWC1/Behavior1/Runnable1"/>
+              <PERIOD value="500"/> <!-- Error: missing unit -->
+            </TIMING-EVENT>
+          </EVENTS>
+        </SWC-INTERNAL-BEHAVIOR>
+      </INTERNAL-BEHAVIORS>
+    </APPLICATION-SW-COMPONENT-TYPE>
+    <SWC-CUSTOM-BEHAVIOR>
+      <SHORT-NAME name="CustomBehavior1"/>
+      <OPERATIONS-SEQUENCE>
+        <OPERATION>
+          <READ>
+            <IREF DEST="/SWC1/Behavior1/Runnable1/Access1"/>
+          </READ>
+        </OPERATION>
+      </OPERATIONS-SEQUENCE>
+    </SWC-CUSTOM-BEHAVIOR>
+    <PRE-BUILT-APPLICATION>
+      <SHORT-NAME name="App1"/>
+      <PATH/> <!-- Error: missing DEST -->
+    </PRE-BUILT-APPLICATION>
+    <Network-Topology>
+      <InterECU_communication>
+        <CAN-BUS CAN-FD="invalid"> <!-- Error: not boolean -->
+          <SHORT-NAME name="CAN1"/>
+          <BaudRate value="1000000"/>
+          <INTERFACE-TREF DEST="/Interface1"/>
+        </CAN-BUS>
+      </InterECU_communication>
+    </Network-Topology>
+    <ECUs>
+      <SHORT-NAME name="ECU1"/>
+      <SoCs>
+        <SHORT-NAME name="SoC1"/>
+        <AXI-BUS width="0" frequency="0"/> <!-- Error: min 1 -->
+        <ETHERNET-INTERFACE Mode="invalid_mode"/> <!-- Error: not simulated/native -->
+        <CPU_Cluster>
+          <Operating-System>
+            <Nucleus_RTOS Affine-tasks-byOS="true" Show_UART_Terminal="false"/>
+          </Operating-System>
+          <ARMV8-Family>
+            <CortexA53 CoresPerCluster="4">
+              <SHORT-NAME name="Cluster1"/>
+              <Frequency value="800000000"/>
+            </CortexA53>
+          </ARMV8-Family>
+        </CPU_Cluster>
+      </SoCs>
+    </ECUs>
+    <HW-SW-MAPPING ClusterRef="/ECU1/SoC1/Cluster1">
+      <Core-PrebuiltApplication-Mapping CoreId="0" PrebuiltApplicationRef="/App1"/>
+    </HW-SW-MAPPING>
+    <Analysis>
+      <SW-Analysis-Enable>
+        <ALL-SoCs>enabled</ALL-SoCs>
+      </SW-Analysis-Enable>
+    </Analysis>
+  </ELEMENTS>
+</AR-PACKAGE>
